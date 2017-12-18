@@ -374,17 +374,15 @@ class SimplePlugin extends BaseJobsSite
             if ($fReturnNodeObject === true) {
                 $ret = $nodeMatches;
                 // do nothing.  We already have the node set correctly
-            } elseif (!empty($nodeMatches) && isset($arrTag['index']) && is_array($nodeMatches) && intval($arrTag['index']) < count($nodeMatches)) {
+            } elseif (!empty($nodeMatches) && isset($arrTag['index']) && is_array($nodeMatches)) {
                 $index = $arrTag['index'];
                 if (count($nodeMatches) <= $index) {
-                    $strError = sprintf("%s plugin failed to find index #%d in the %d nodes matching '%s'. ", $this->JobSiteName, $index, count($nodeMatches), $strMatch);
-                    LogError($strError);
-                    throw new \Exception($strError);
+                    return null;
                 }
                 $ret = $nodeMatches[$index];
             } elseif (!empty($nodeMatches) && is_array($nodeMatches)) {
                 if (count($nodeMatches) > 1) {
-                    $strError = sprintf("Warning:  %s plugin matched %d nodes to selector '%s' but did not specify an index.  Assuming first node.", $this->JobSiteName, count($ret), $strMatch);
+                    $strError = sprintf("Warning:  %s plugin matched %d nodes to selector '%s' but did not specify an index.  Assuming first node.", $this->JobSiteName, count($nodeMatches), $strMatch);
                     LogWarning($strError);
                 }
                 $ret = $nodeMatches[0];
