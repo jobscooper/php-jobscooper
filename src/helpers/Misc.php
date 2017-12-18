@@ -67,6 +67,13 @@ function noJobStringMatch($var, $matchString)
     if(is_null($matchString) || strlen($matchString) == 0)
         throw new Exception("Invalid match string passed to helper noJobStringMatch.");
 
+    if(empty($var))
+    	return null;
+
+    if(substr($matchString, 0, 1) === "/")
+    	if (preg_match($matchString, $var) !== false)
+    		return 0;
+
     if(stristr(strtoupper($var), strtoupper($matchString)) !== false)
         return 0;
 
