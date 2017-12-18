@@ -35,7 +35,7 @@ class SimplePlugin extends BaseJobsSite
     function __construct()
     {
         if (empty($this->arrListingTagSetup))
-            $this->arrListingTagSetup = SimplePlugin::getEmptyListingTagSetup();
+            $this->arrListingTagSetup = array();
 
         if(!empty($this->arrBaseListingTagSetup))
             $this->arrListingTagSetup = array_replace_recursive($this->arrBaseListingTagSetup, $this->arrListingTagSetup);
@@ -110,48 +110,6 @@ class SimplePlugin extends BaseJobsSite
         });
 
 
-    }
-
-    static function getJobItemKeys()
-    {
-        return array(
-            'JobSitePostId',
-            'Title',
-            'Url',
-            'JobSiteKey',
-            'Location',
-            'Category',
-            'Department',
-//            'PayRange',
-            'Company',
-//            'company_logo',
-            'PostedAt',
-            'EmploymentType'
-        );
-    }
-
-    static function getEmptyListingTagSetup()
-    {
-        $arrListingTagSetup = array(
-            'TotalResultPageCount' => array(),
-            'NoPostsFound' => array(),
-            'TotalPostCount' => array(),
-            'JobPostItem' => array(),
-            'NextButton' => array(),
-            'JobSitePostId' => array(),
-            'Title' => array(),
-            'Url' => array(),
-            'JobSiteKey' => array(),
-            'Department' => array(),
-            'Location' => array(),
-            'Category' => array(),
-            'Company' => array(),
-//            'company_logo' => array(),
-            'PostedAt' => array(),
-            'EmploymentType' => array(),
-            'regex_link_job_id' => array(),
-        );
-        return $arrListingTagSetup;
     }
 
     function matchesNoResultsPattern($var)
