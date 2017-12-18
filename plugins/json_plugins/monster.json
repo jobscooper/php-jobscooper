@@ -107,7 +107,7 @@
     "SourceURL": "https://www.monster.co.uk/jobs/search/?q=***KEYWORDS***&where=***LOCATION***&client=power&cy=uk&rad=20&intcid=swoop_HeroSearch_UK",
     "LocationType": "location-city-comma-statecode-underscores-and-dashes",
     "CountryCodes" : ["GB"],
-      "PluginExtendsClassName" : "PluginMonster"
+    "PluginExtendsClassName" : "PluginMonster"
     }
   ]
 }
