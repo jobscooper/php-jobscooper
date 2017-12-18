@@ -30,25 +30,30 @@ class JobSiteRecord extends BaseJobSiteRecord
 	 */
 	function getPlugin()
     {
-	    if (is_null($this->getPluginClassName()))
+	    $class = $this->getPluginClassName();
+	    if (empty($class))
 		    throw new \Exception("Missing jobsite plugin class name for " . $this->getJobSiteKey());
 
 	    if (is_null($this->_pluginObject)) {
 		    try {
-			    $class = $this->getPluginClassName();
 			    if (!in_array($class, get_declared_classes())) {
 				    LogError("Unable to find declared class " . $this->getPluginClassName() . "] for plugin " . $this->getJobSiteKey());
 				    $this->_pluginObject = null;
+				    $this->setisDisabled(true);
+				    $this->save();
+				    $this->_pluginObject = null;
+			    }
+			    else {
+
+				    $this->_pluginObject = new $class();
+
+				    setCacheItem("all_jobsites_and_plugins", $this->getJobSiteKey(), $this);
+
 			    }
 
-			    $this->_pluginObject = new $class();
-
-			    setCacheItem("all_jobsites_and_plugins", $this->getJobSiteKey(), $this);
-
 			    return $this->_pluginObject;
-
 		    } catch (\Exception $ex) {
-			    LogError("Error instantiating jobsite plugin object" . $this->getJobSiteKey() . " with class name [" . $this->getPluginClassName() . "]:  " . $ex->getMessage());
+			    LogError("Error instantiating jobsite plugin for '" . $this->getJobSiteKey() . "' with class name [" . $this->getPluginClassName() . "]:  " . $ex->getMessage());
 			    $this->_pluginObject = null;
 		    }
 	    }
