@@ -40,7 +40,7 @@ class PluginAuthenticJobs extends \JobScooper\Plugins\Classes\AjaxHtmlSimplePlug
 
     function checkNoJobResults($var)
     {
-        return noJobStringMatch($var, "No jobs");
+        return noJobStringMatch($var, "No results found");
     }
 
 
