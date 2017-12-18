@@ -50,7 +50,8 @@ RUN apt-get update && apt-get install -y \
     php5-mcrypt \
     php5-xsl \
     php5-mysql \
-    php5-sqlite
+    php5-sqlite \
+    php5-http
 
 
 #######################################################
