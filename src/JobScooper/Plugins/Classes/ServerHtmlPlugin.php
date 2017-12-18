@@ -23,7 +23,7 @@ abstract class ServerHtmlPlugin extends BaseJobsSite
 {
     function __construct($strBaseDir = null)
     {
-        $this->pluginResultsType = C__JOB_SEARCH_RESULTS_TYPE_SERVERSIDE_WEBPAGE__;
+        $this->pluginResultsType = C__JOB_SEARCH_RESULTS_TYPE_WEBPAGE;
 
         parent::__construct();
 

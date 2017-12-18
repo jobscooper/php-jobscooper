@@ -21,6 +21,6 @@ namespace JobScooper\Plugins\Classes;
 
 abstract class ServerHtmlSimplePlugin extends SimplePlugin
 {
-    protected $pluginResultsType = C__JOB_SEARCH_RESULTS_TYPE_SERVERSIDE_WEBPAGE__;
+    protected $pluginResultsType = C__JOB_SEARCH_RESULTS_TYPE_WEBPAGE;
 }
 

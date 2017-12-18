@@ -304,7 +304,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
     protected $strKeywordDelimiter = null;
     protected $additionalLoadDelaySeconds = 0;
     protected $_flags_ = null;
-    protected $pluginResultsType = C__JOB_SEARCH_RESULTS_TYPE_SERVERSIDE_WEBPAGE__;
+    protected $pluginResultsType = C__JOB_SEARCH_RESULTS_TYPE_WEBPAGE;
 
     protected $CountryCodes = array("US");
     private $_jobSiteDbRecord = null;
@@ -823,9 +823,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
 
             if ($this->pluginResultsType == C__JOB_SEARCH_RESULTS_TYPE_JOBSAPI__) {
                 $this->_getMyJobsForSearchFromJobsAPI_($searchDetails);
-            } elseif ($this->pluginResultsType == C__JOB_SEARCH_RESULTS_TYPE_SERVERSIDE_WEBPAGE__) {
-                $this->_getMyJobsForSearchFromWebpage_($searchDetails);
-            } elseif ($this->pluginResultsType == C__JOB_SEARCH_RESULTS_TYPE_CLIENTSIDE_WEBPAGE__) {
+            } elseif ($this->pluginResultsType == C__JOB_SEARCH_RESULTS_TYPE_WEBPAGE) {
                 $this->_getMyJobsForSearchFromWebpage_($searchDetails);
             } else {
                 throw new \ErrorException("Class " . get_class($this) . " does not have a valid setting for parser.  Cannot continue.");

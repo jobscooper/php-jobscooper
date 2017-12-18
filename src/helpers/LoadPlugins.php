@@ -26,10 +26,9 @@
 //
 //
 //************************************************************************
-const C__JOB_SEARCH_RESULTS_TYPE_SERVERSIDE_WEBPAGE__  = "SERVER_HTML";
-const C__JOB_SEARCH_RESULTS_TYPE_CLIENTSIDE_WEBPAGE__  = "CLIENT_HTML";
+
+const C__JOB_SEARCH_RESULTS_TYPE_WEBPAGE  = "WEBPAGE_HTML";
 const C__JOB_SEARCH_RESULTS_TYPE_JOBSAPI__ = "JOBAPI";
-const C__JOB_SEARCH_RESULTS_TYPE_UNKNOWN__ = "ERROR_UNKNOWN_TYPE";
 
 //************************************************************************
 //
