@@ -2,7 +2,6 @@
   "JobSiteName": "KellyServices",
   "SourceURL": "https://kelly.secure.force.com/CandidateExperience/CandExpJobSearch?advanced=false&jobCategoryList=null&location=***LOCATION***&radius=60",
   "BaseURL": "https://kelly.secure.force.com",
-  "AdditionalFlags" : [ "C__JOB_USE_SELENIUM"],
   "CountryCodes" : ["US"],
   "PluginExtendsClassName" : "AbstractKellyServices",
   "LocationType": "location-city-comma-state",

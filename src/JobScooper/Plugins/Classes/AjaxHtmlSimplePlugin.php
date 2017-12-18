@@ -17,7 +17,7 @@
 
 namespace JobScooper\Plugins\Classes;
 
-
+use JobScooper\Manager\SeleniumManager;
 
 abstract class AjaxHtmlSimplePlugin extends SimplePlugin
 {
@@ -25,7 +25,13 @@ abstract class AjaxHtmlSimplePlugin extends SimplePlugin
 
     function __construct()
     {
-        $this->additionalBitFlags[] = C__JOB_USE_SELENIUM;
+	    try
+	    {
+		    $this->_selenium = new SeleniumManager();
+	    } catch (\Exception $ex) {
+		    handleException($ex, "Unable to start Selenium to get jobs for plugin '" . $this->JobSiteName . "'", true);
+	    }
+
         parent::__construct();
 
     }

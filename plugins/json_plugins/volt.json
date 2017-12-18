@@ -2,7 +2,6 @@
   "JobSiteName": "Volt",
   "SourceURL": "http://jobs.volt.com/jobsearch/?page=***PAGE_NUMBER***&ipp=10&Keywords=&Location=***LOCATION***&Category=&OrderBy=Date_DESC&latlng=",
   "BaseURL": "http://jobs.volt.com/",
-  "AdditionalFlags" : [ "C__JOB_USE_SELENIUM__"],
   "LocationType": "location-city-space-statecode",
   "CountryCodes" : ["US"],
   "Collections": [

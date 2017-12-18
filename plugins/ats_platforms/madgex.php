@@ -104,11 +104,8 @@ abstract class AbstractMadgexATS extends \JobScooper\Plugins\Classes\AjaxHtmlSim
 	                    $curSearch = getConfigurationSetting('current_user_search_details');
 	                    if(!empty($curSearch))
 		                    $curSearch->setSearchStartUrl($url);
-//                        $this->currentSearchAlternateURL = preg_replace('/[Ppage]{4}=\d+/', 'Page=***PAGE_NUMBER***', $url);
 
-                        $this->selenium->loadPage($url);
-                        $html = $this->selenium->getPageHTML($url);
-                        $objSimpHTML = new \JobScooper\Utils\SimpleHTMLHelper($html);
+	                    $objSimpHTML = $this->getSimpleHtmlDomFromSelenium($url);
                     } catch (Exception $ex) {
                         handleException(new Exception("Failed to parseAndRedirectToLocation", $ex->getCode(), $ex), null, true);
                     }

@@ -46,7 +46,7 @@ class PluginAuthenticJobs extends \JobScooper\Plugins\Classes\AjaxHtmlSimplePlug
 
     protected function goToEndOfResultsSetViaLoadMore($nTotalItems)
     {
-        $objSimplHtml = $this->getSimpleHtmlDomFromSeleniumPage();
+        $objSimplHtml = $this->getSimpleHtmlDomFromSelenium();
 
         $node = $objSimplHtml->find("p.more");
         if($node == null || count($node) == 0)

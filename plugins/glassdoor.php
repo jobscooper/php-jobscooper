@@ -56,14 +56,7 @@ abstract class AbstractGlassdoor extends \JobScooper\Plugins\Classes\AjaxHtmlSim
         });
         ";
 
-        $this->selenium->getPageHTML($searchDetails->getSearchStartUrl());
-
-        $this->runJavaScriptSnippet($js, false);
-        sleep($this->additionalLoadDelaySeconds + 2);
-
-        $html = $this->getActiveWebdriver()->getPageSource();
-        return $html;
-
+	    return $this->getSimpleHtmlDomFromSelenium();
     }
 
 

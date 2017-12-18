@@ -99,6 +99,8 @@ abstract class BaseJobsSite implements IJobSitePlugin
 		$thisSite = $allSites[$key];
 		$thisSite->setResultsFilterType($this->resultsFilterType);
 		$thisSite->save();
+	    if(!empty($this->_selenium))
+	    	$this->useSelenium = true;
 
 		return $this->resultsFilterType;
 	}
@@ -180,25 +182,20 @@ abstract class BaseJobsSite implements IJobSitePlugin
             */
             foreach ($this->arrSearchesToReturn as $search)
             {
-                try {
-                    if ($this->isBitFlagSet(C__JOB_USE_SELENIUM) && is_null($this->selenium)) {
-                        try
-                        {
-                            $this->selenium = new SeleniumManager();
-                        } catch (Exception $ex) {
-                            handleException($ex, "Unable to start Selenium to get jobs for plugin '" . $this->JobSiteName . "'", true);
-                        }
-                    }
+	            if (!empty($this->_selenium)) {
+	                try {
 
-                    $this->_updateJobsDataForSearch_($search);
-                    $this->_addJobMatchesToUser($search);
-                    $this->_setSearchResult_($search, true);
-                } catch (Exception $ex) {
-                    $this->_setSearchResult_($search, false, new Exception("Unable to download jobs: " .strval($ex)));
-                    handleException($ex);
-                } finally {
-                    $search->save();
-                    setConfigurationSetting('current_user_search_details', null);
+	                    $this->_updateJobsDataForSearch_($search);
+	                    $this->_addJobMatchesToUser($search);
+	                    $this->_setSearchResult_($search, true);
+	                } catch (Exception $ex) {
+	                    $this->_setSearchResult_($search, false, new Exception("Unable to download jobs: " .strval($ex)));
+	                    handleException($ex);
+	                } finally {
+	                    $search->save();
+	                    setConfigurationSetting('current_user_search_details', null);
+	                }
+
                 }
             }
 
@@ -249,15 +246,15 @@ abstract class BaseJobsSite implements IJobSitePlugin
         } finally {
             try
             {
-                if(!is_null($this->selenium)) {
-                    $this->selenium->done();
+                if(!is_null($this->_selenium)) {
+                    $this->_selenium->done();
                 }
             } catch (Exception $ex) {
                 LogWarning("Unable to shutdown Selenium server successfully while closing down downloads for {$this->JobSiteName}: " . $ex->getMessage());
             }
             finally
             {
-                $this->selenium = null;
+                $this->_selenium = null;
             }
 
 	        setConfigurationSetting('current_user_search_details', null);
@@ -277,11 +274,11 @@ abstract class BaseJobsSite implements IJobSitePlugin
     //
     //************************************************************************
 
+	public $useSelenium = false;
     protected $JobListingsPerPage = 20;
     protected $additionalBitFlags = array();
     protected $PaginationType = null;
     protected $secsPageTimeout = null;
-    protected $selenium = null;
     protected $nextPageScript = null;
     protected $selectorMoreListings = null;
     protected $nMaxJobsToReturn = C_JOB_MAX_RESULTS_PER_SEARCH;
@@ -307,7 +304,75 @@ abstract class BaseJobsSite implements IJobSitePlugin
     protected $pluginResultsType = C__JOB_SEARCH_RESULTS_TYPE_WEBPAGE;
 
     protected $CountryCodes = array("US");
-    private $_jobSiteDbRecord = null;
+
+	protected $_selenium = null;
+	private $_webdriver = null;
+
+
+	/**
+	 * @param null $url
+	 *
+	 * @return \JobScooper\Utils\SimpleHTMLHelper|null
+	 * @throws \Exception
+	 */
+	public function getSimpleHtmlDomFromSelenium($url=null)
+	{
+		$objSimpleHTML = null;
+		$driver = $this->getWebDriver();
+
+		try {
+			if(!empty($url)) {
+				$driver->get($url);
+				LogMessage("... sleeping " . $this->additionalLoadDelaySeconds . " seconds while Selenium loads the requested page for " . $this->JobSiteName);
+				sleep($this > $this->additionalLoadDelaySeconds);
+			}
+
+			$html = $driver->getPageSource();
+			$objSimpleHTML = new SimpleHtmlHelper($html);
+			$objSimpleHTML->setSource($driver->getCurrentUrl());
+		} catch (Exception $ex) {
+			$strError = "Failed to get dynamic HTML via Selenium due to error:  " . $ex->getMessage();
+			handleException(new Exception($strError), null, true);
+		}
+		return $objSimpleHTML;
+	}
+
+
+	/**
+	 * @return \WebDriver
+	 * @throws \Exception
+	 */
+	public function getWebDriver()
+	{
+		if (empty($this->_selenium))
+		{
+			$this->_selenium = $this->_getSeleniumManager();
+		}
+
+		$this->_webdriver = $this->_selenium->get_driver();
+
+		return $this->_webdriver;
+	}
+	/**
+	 * @return SeleniumManager
+	 * @throws \Exception
+	 */
+	private function _getSeleniumManager()
+	{
+		if (empty($this->_selenium))
+		{
+			try
+			{
+				$this->_selenium = new SeleniumManager();
+			}
+			catch (Exception $ex)
+			{
+				handleException($ex);
+			}
+		}
+
+		return $this->_selenium;
+	}
 
 
 
@@ -319,14 +384,6 @@ abstract class BaseJobsSite implements IJobSitePlugin
     function getSupportedCountryCodes()
     {
         return $this->CountryCodes;
-    }
-
-    protected function getActiveWebdriver()
-    {
-        if (!is_null($this->selenium)) {
-            return $this->selenium->get_driver();
-        } else
-            throw new Exception("Error:  active webdriver for Selenium not found as expected.");
     }
 
     protected function getCombinedKeywordString($arrKeywordSet)
@@ -505,7 +562,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
     {
 
         // Neat trick written up by http://softwaretestutorials.blogspot.in/2016/09/how-to-perform-page-scrolling-with.html.
-        $driver = $this->getActiveWebdriver();
+        $driver = $this->getWebDriver();
 
         $driver->executeScript("window.scrollTo(0,document.body.scrollHeight);");
 
@@ -514,7 +571,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
     }
 
 
-    protected function getKeywordURLValue(UserSearchSiteRun $searchDetails)
+    protected function getKeywordUrlValue(UserSearchSiteRun $searchDetails)
     {
         if (!$this->isBitFlagSet(C__JOB_KEYWORD_URL_PARAMETER_NOT_SUPPORTED)) {
             return $this->_getKeywordStringsForUrl_($searchDetails);
@@ -1019,7 +1076,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
 
     protected function runJavaScriptSnippet($jscript = "", $wrap_in_func = true)
     {
-        $driver = $this->getActiveWebdriver();
+        $driver = $this->getWebDriver();
 
         if ($wrap_in_func === true) {
             $jscript = "function call_from_php() { " . $jscript . " }; call_from_php();";
@@ -1165,28 +1222,6 @@ abstract class BaseJobsSite implements IJobSitePlugin
         return $jobResults;
     }
 
-
-    protected function getSimpleHtmlDomFromSeleniumPage($url=null)
-    {
-        $objSimpleHTML = null;
-        try {
-            if(!empty($url))
-                $this->getActiveWebdriver()->get($url);
-
-            LogMessage("... sleeping " . $this->additionalLoadDelaySeconds . " seconds while the page results load for " . $this->JobSiteName);
-            sleep($this>$this->additionalLoadDelaySeconds);
-
-            $html = $this->getActiveWebdriver()->getPageSource();
-            $objSimpleHTML = new SimpleHtmlHelper($html);
-            $objSimpleHTML->setSource($this->getActiveWebdriver()->getCurrentUrl());
-        } catch (Exception $ex) {
-            $strError = "Failed to get dynamic HTML via Selenium due to error:  " . $ex->getMessage();
-            handleException(new Exception($strError), null, true);
-        }
-        return $objSimpleHTML;
-    }
-
-
     private function _getMyJobsForSearchFromWebpage_(UserSearchSiteRun $searchDetails)
     {
         try {
@@ -1196,17 +1231,13 @@ abstract class BaseJobsSite implements IJobSitePlugin
 
             LogMessage("Getting count of " . $this->JobSiteName . " jobs for search '" . $searchDetails->getUserSearchSiteRunKey() . "': " . $searchDetails->getSearchStartUrl());
 
-            if ($this->isBitFlagSet(C__JOB_USE_SELENIUM)) {
+            if ($this->useSelenium) {
                 try {
-                    if (is_null($this->selenium)) {
-                        $this->selenium = new SeleniumManager($this->additionalLoadDelaySeconds);
+                    if (method_exists($this, "doFirstPageLoad") && $nPageCount == 1) {
+	                    $objSimpleHTML = $this->doFirstPageLoad($searchDetails);
                     }
-
-                    if (method_exists($this, "doFirstPageLoad") && $nPageCount == 1)
-                        $html = $this->doFirstPageLoad($searchDetails);
                     else
-                        $html = $this->selenium->getPageHTML($searchDetails->getSearchStartUrl());
-                    $objSimpleHTML = $this->getSimpleHtmlDomFromSeleniumPage();
+	                    $objSimpleHTML = $this->getSimpleHtmlDomFromSelenium($searchDetails->getSearchStartUrl());
                 } catch (Exception $ex) {
                     $strError = "Failed to get dynamic HTML via Selenium due to error:  " . $ex->getMessage();
                     handleException(new Exception($strError), null, true);
@@ -1275,17 +1306,17 @@ abstract class BaseJobsSite implements IJobSitePlugin
                     // need to make the calls to load the full results set into the page HTML
                     // We do this only for certain pagination types (INFSCROLLPAGE)
                     //
-                    if ($this->isBitFlagSet(C__JOB_USE_SELENIUM)) {
+	                if ($this->useSelenium) {
                         try {
                             switch (strtoupper($this->PaginationType)) {
 
                                 case C__PAGINATION_NONE:
                                     $totalPagesCount = 1;
-                                    $this->selenium->loadPage($strURL);
+                                    $this->_selenium->loadPage($strURL);
                                     break;
 
                                 case C__PAGINATION_INFSCROLLPAGE_PAGEDOWN:
-                                    $this->selenium->loadPage($strURL);
+                                    $this->_selenium->loadPage($strURL);
                                     //
                                     // If we dont know how many pages to go down,
                                     // call the method to go down to the very end so we see the whole page
@@ -1296,7 +1327,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
                                     break;
 
                                 case C__PAGINATION_INFSCROLLPAGE_VIALOADMORE:
-                                    $this->selenium->loadPage($strURL);
+                                    $this->_selenium->loadPage($strURL);
                                     //
                                     // If we dont know how many pages to go down,
                                     // call the method to go down to the very end so we see the whole page
@@ -1307,7 +1338,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
                                     break;
 
                                 case C__PAGINATION_INFSCROLLPAGE_NOCONTROL:
-                                    $this->selenium->loadPage($strURL);
+                                    $this->_selenium->loadPage($strURL);
                                     //
                                     // if we know how many pages to do do, call the page down method
                                     // until we get to the right number of pages
@@ -1327,7 +1358,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
                                         handleException(new Exception("Plugin " . $this->JobSiteName . " is missing nextPageScript settings for the defined pagination type."), "", true);
 
                                     }
-                                    $this->selenium->loadPage($strURL);
+                                    $this->_selenium->loadPage($strURL);
 
                                     if ($nPageCount > 1 && $nPageCount <= $totalPagesCount) {
                                         $this->runJavaScriptSnippet($this->nextPageScript, true);
@@ -1336,7 +1367,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
                                     break;
                             }
 
-                            $objSimpleHTML = $this->getSimpleHtmlDomFromSeleniumPage();
+                            $objSimpleHTML = $this->getSimpleHtmlDomFromSelenium();
 
                         } catch (Exception $ex) {
                             handleException($ex, "Failed to get dynamic HTML via Selenium due to error:  %s", true);
@@ -1447,14 +1478,14 @@ abstract class BaseJobsSite implements IJobSitePlugin
                     // move the browser session to the next page of results. (Unless we were on
                     // an infinite scroll page, if we were, then there isn't another page to load.)
                     //
-                    if ($this->isBitFlagSet(C__JOB_USE_SELENIUM)) {
+	                if ($this->useSelenium) {
                         try {
                             switch (strtoupper($this->PaginationType)) {
                                 case C__PAGINATION_PAGE_VIA_URL:
                                     $strURL = $this->getPageURLfromBaseFmt($searchDetails, $nPageCount, $nItemCount);
                                     if ($this->_checkInvalidURL_($searchDetails, $strURL) == VALUE_NOT_SUPPORTED)
                                         return null;
-                                    $this->selenium->loadPage($strURL);
+                                    $this->_selenium->loadPage($strURL);
                                     break;
 
                                 case C__PAGINATION_PAGE_VIA_NEXTBUTTON:
@@ -1462,7 +1493,7 @@ abstract class BaseJobsSite implements IJobSitePlugin
                                         throw(new Exception("Plugin " . $this->JobSiteName . " is missing selectorMoreListings setting for the defined pagination type."));
 
                                     }
-                                    $this->selenium->loadPage($strURL);
+                                    $this->_selenium->loadPage($strURL);
 
                                     if ($nPageCount > 1 && ($totalPagesCount == C__TOTAL_ITEMS_UNKNOWN__ || $nPageCount <= $totalPagesCount)) {
                                         $ret = $this->goToNextPageOfResultsViaNextButton();

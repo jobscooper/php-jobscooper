@@ -58,7 +58,6 @@ const C__PAGINATION_NONE = "NONE";
 //
 //************************************************************************
 
-const C__JOB_USE_SELENIUM = 0x1;
 const C__JOB_IGNORE_MISMATCHED_JOB_COUNTS = 0x2;
 
 const C__JOB_KEYWORD_URL_PARAMETER_NOT_SUPPORTED = 0x10;

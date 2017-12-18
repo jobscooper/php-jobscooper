@@ -89,7 +89,6 @@ class PluginRobertHalfExec extends BaseForceComClass
     protected $JobSiteName= "RobertHalfExec";
     protected $JobPostingBaseUrl = "http://roberthalf.force.com";
     protected $SearchUrlFormat = "http://roberthalf.force.com/careers";
-    protected $additionalBitFlags = [ C__JOB_USE_SELENIUM ];
     function __construct()
     {
         parent::__construct();
@@ -122,13 +121,12 @@ class PluginRobertHalfExec extends BaseForceComClass
             }  
         ";
 
-        $this->selenium->getPageHTML($searchDetails->getSearchParameter('search_start_url'));
+        $this->getSimpleHtmlDomFromSelenium($searchDetails->getSearchParameter('search_start_url'));
 
         $this->runJavaScriptSnippet($js, false);
         sleep($this->additionalLoadDelaySeconds + 2);
 
-        $html = $this->getActiveWebdriver()->getPageSource();
-        return $html;
+	    return $this->getSimpleHtmlDomFromSelenium();
     }
 
 }

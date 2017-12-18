@@ -3,7 +3,6 @@
   "SourceURL": "https://www1.jobdiva.com/candidates/myjobs/searchjobsdone.jsp?pageno=***PAGE_NUMBER***&perpage=40&source=&a=m5jdnws9ixuzaudkd2vzgnbd1p8df30471o8ljt2ogv7rmq46l5q2xn97l9xny9&StatesString=***LOCATION***",
   "wrongurl" : "https://www1.jobdiva.com/candidates/myjobs/searchjobsdone.jsp?req=1&pageno=***PAGE_NUMBER***&perpage=40&a=m5jdnws9ixuzaudkd2vzgnbd1p8df30471o8ljt2ogv7rmq46l5q2xn97l9xny9w&StatesString=***LOCATION***&SearchString=&divisions=&divisions2=&source=&t=1507959320793",
   "BaseURL": "https://www1.jobdiva.com",
-  "AdditionalFlags" : [ "C__JOB_USE_SELENIUM"],
   "CountryCodes" : ["US"],
   "LocationType": "location-state",
   "Collections": [
