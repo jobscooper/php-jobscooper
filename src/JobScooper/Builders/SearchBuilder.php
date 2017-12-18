@@ -180,7 +180,7 @@ class SearchBuilder
 
 	private function _filterJobSitesThatAreExcluded()
 	{
-		$allSites = JobSitePluginBuilder::getAllJobSites();
+		$allSites = JobSitePluginBuilder::getJobSites();
 		$includedSites = JobSitePluginBuilder::getIncludedJobSites();
 
 		$keysExcludedSites = array_diff_key($allSites, $includedSites);

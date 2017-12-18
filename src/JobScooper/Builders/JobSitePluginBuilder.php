@@ -20,41 +20,59 @@ namespace JobScooper\Builders;
 
 
 use Exception;
-use JobApis\Jobs\Client\Job;
-use JobScooper\DataAccess\JobSiteRecord;
 use JobScooper\DataAccess\JobSiteRecordQuery;
-use JobScooper\Utils\DocOptions;
-use Propel\Runtime\ActiveQuery\Criteria;
 
 class JobSitePluginBuilder
 {
-    static function getAllJobSites($requireEnabled=true)
+	/**
+	 * @param bool $requireEnabled
+	 * @param null $onlyJobSiteKey
+	 *
+	 * @return array|mixed|null
+	 */
+	static function getJobSites($requireEnabled=true, $onlyJobSiteKey=null)
     {
 	    $sitesBySiteKey = getCacheAsArray("all_jobsites_and_plugins");
-		if(!empty($sitesBySiteKey))
-			return $sitesBySiteKey;
+		if(empty($sitesBySiteKey)) {
 
-		$plugins = new JobSitePluginBuilder();
+			$plugins = new JobSitePluginBuilder();
 
-        $query = JobSiteRecordQuery::create();
+			$query = JobSiteRecordQuery::create();
 
-        if($requireEnabled === true)
-        {
-            $query->filterByisDisabled(false);
-        }
+			if ($requireEnabled === true) {
+				$query->filterByisDisabled(false);
+			}
 
-        $sites = $query
-	        ->find()
-	        ->toKeyIndex('JobSiteKey');
+			$sites = $query
+				->find()
+				->toKeyIndex('JobSiteKey');
 
-        setAsCacheData("all_jobsites_and_plugins", $sites);
+			setAsCacheData("all_jobsites_and_plugins", $sites);
 
-	    if(is_null($sitesBySiteKey))
-		    return array();
+			if (is_null($sitesBySiteKey))
+				return array();
+		}
+
+
+	    // find just the site we want if specified and return it or null
+		if(!empty($onlyJobSiteKey))
+		{
+			if(array_key_exists($onlyJobSiteKey, $sitesBySiteKey))
+				return $sitesBySiteKey[$onlyJobSiteKey];
+			else
+				return null;
+		}
+
+		// return the full array of sites
 	    return $sitesBySiteKey;
     }
 
-    static function getIncludedJobSites($fOptimizeBySiteRunOrder=false)
+	/**
+	 * @param bool $fOptimizeBySiteRunOrder
+	 *
+	 * @return array|mixed|null
+	 */
+	static function getIncludedJobSites($fOptimizeBySiteRunOrder=false)
     {
 	    $sites = getCacheAsArray("included_jobsites");
 	    if (is_null($sites))
@@ -81,33 +99,46 @@ class JobSitePluginBuilder
 	    return $sites;
     }
 
+	/**
+	 * @param $sitesInclude
+	 */
 	static function setIncludedJobSites($sitesInclude)
 	{
 		$GLOBALS[JOBSCOOPER_CACHES_ROOT]["included_jobsites"] = $sitesInclude;
 	}
 
+	/**
+	 * @return array
+	 */
 	static function getExcludedJobSites()
 	{
-		$allSites = JobSitePluginBuilder::getAllJobSites();
+		$allSites = JobSitePluginBuilder::getJobSites();
 		$inclSites = JobSitePluginBuilder::getIncludedJobSites();
 
 		return array_diff_key($allSites, $inclSites);
 	}
 
+	/**
+	 * @return array|mixed|null
+	 */
 	static function getJobSitesCmdLineIncludedInRun()
 	{
 		$cmdLineSites = getConfigurationSetting("command_line_args.jobsite");
-		$sites = self::getAllJobSites(true);
+		$sites = self::getJobSites(true);
 		if(in_array("all", $cmdLineSites))
 			return $sites;
 
 		$includedSites = array_filter($cmdLineSites, function ($v) use ($sites){
-			return array_key_exists(strtolower($v), $sites);
+			$ret = array_key_exists(strtolower($v), $sites);
+			return $ret;
 		});
 
 		return array_intersect_key($sites, array_combine($includedSites, $includedSites));
 	}
 
+	/**
+	 * @param array $setExcluded
+	 */
 	static function setSitesAsExcluded($setExcluded=array())
 	{
 		if(empty($setExcluded))
@@ -120,6 +151,9 @@ class JobSitePluginBuilder
 		JobSitePluginBuilder::setIncludedJobSites($inputIncludedSites);
 	}
 
+	/**
+	 * @param $countryCodes
+	 */
 	static function filterJobSitesByCountryCodes($countryCodes)
 	{
 		$ccRun = join(", ", $countryCodes);
@@ -141,9 +175,43 @@ class JobSitePluginBuilder
 
 		if(!empty($sitesOutOfSearchArea)) {
 			JobSitePluginBuilder::setSitesAsExcluded($sitesOutOfSearchArea);
-		 LogMessage("Skipping searches for " . getArrayDebugOutput(array_keys($sitesOutOfSearchArea)) . " because they do not cover country codes = (" . $ccRun . ").");
-			}
+			LogMessage("Skipping searches for " . getArrayDebugOutput(array_keys($sitesOutOfSearchArea)) . " because they do not cover country codes = (" . $ccRun . ").");
+		}
 	}
+
+	/**
+	 *
+	 */
+	static function updateDBResultFilterTypes()
+	{
+		$sites = JobSitePluginBuilder::getJobSites();
+
+		foreach ($sites as $jobsiteKey => $site) {
+			$plugin = $site->getPlugin();
+			if (!empty($plugin))
+			{
+				if ($plugin->isBitFlagSet(C__JOB_KEYWORD_URL_PARAMETER_NOT_SUPPORTED))
+				{
+					if ($plugin->isBitFlagSet(C__JOB_LOCATION_URL_PARAMETER_NOT_SUPPORTED))
+						$site->setResultsFilterType("all-only");
+					else
+						$site->setResultsFilterType("all-by-location");
+				}
+				else
+				{
+					$site->setResultsFilterType("user-filtered");
+				}
+				$site->save();
+			}
+		}
+
+		if(!empty($sites)) {
+			LogMessage("Updated ResultsFilterType value in database for " . count($sites) . " jobsite records.");
+		}
+	}
+
+
+
 
 	protected $_renderer = null;
     protected $_dirPluginsRoot = null;
@@ -335,10 +403,8 @@ class JobSitePluginBuilder
         }
 
 
-        if (array_key_exists("Collections", $arrConfigData) && !is_null($arrConfigData['Collections']) && is_array($arrConfigData['Collections']) && count($arrConfigData['Collections']) > 0 && array_key_exists("Fields", $arrConfigData['Collections'][0])) {
-
-
-//            $pluginData['arrListingTagSetup'] = \JobScooper\Plugins\Classes\SimplePlugin::getEmptyListingTagSetup();
+        if (array_key_exists("Collections", $arrConfigData) && !is_null($arrConfigData['Collections']) && is_array($arrConfigData['Collections']) && count($arrConfigData['Collections']) > 0 && array_key_exists("Fields", $arrConfigData['Collections'][0]))
+        {
             if(!is_array($pluginData['arrListingTagSetup']))
                     $pluginData['arrListingTagSetup'] = array();
             foreach ($arrConfigData['Collections'] as $coll) {

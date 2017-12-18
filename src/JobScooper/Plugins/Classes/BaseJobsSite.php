@@ -80,35 +80,16 @@ abstract class BaseJobsSite implements IJobSitePlugin
         if (empty($this->JobSiteName)) {
             $this->JobSiteName = str_replace("Plugin", "", get_class($this));
         }
-    }
 
-	function setResultsFilterType()
-	{
-		if ($this->isBitFlagSet(C__JOB_KEYWORD_URL_PARAMETER_NOT_SUPPORTED))
-		{
-			if ($this->isBitFlagSet(C__JOB_LOCATION_URL_PARAMETER_NOT_SUPPORTED))
-				$this->resultsFilterType = "all-only";
-			else
-				$this->resultsFilterType = "all-by-location";
-		}
-		else
-			$this->resultsFilterType = "user-filtered";
-
-		$key = $this->getJobSiteKey();
-		$allSites = JobSitePluginBuilder::getAllJobSites();
-		$thisSite = $allSites[$key];
-		$thisSite->setResultsFilterType($this->resultsFilterType);
-		$thisSite->save();
 	    if(!empty($this->_selenium))
 	    	$this->useSelenium = true;
 
-		return $this->resultsFilterType;
-	}
+    }
 
 	function getJobSiteKey()
 	{
 		if(empty($this->JobSiteKey)) {
-			$arrSiteList = \JobScooper\Builders\JobSitePluginBuilder::getAllJobSites();
+			$arrSiteList = \JobScooper\Builders\JobSitePluginBuilder::getJobSites();
 			$className = get_class($this);
 			$siteKey = strtolower(str_ireplace("Plugin", "", $className));
 			if (array_key_exists($siteKey, $arrSiteList) === true)
@@ -139,8 +120,6 @@ abstract class BaseJobsSite implements IJobSitePlugin
 
     public function addSearches($arrSearches)
     {
-	    $this->setResultsFilterType();
-
         if ($this->isBitFlagSet(C__JOB_KEYWORD_URL_PARAMETER_NOT_SUPPORTED)) {
             $searchToKeep = null;
             foreach (array_keys($arrSearches) as $searchkey)

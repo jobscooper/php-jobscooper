@@ -156,6 +156,7 @@ class StageManager
         } else {
             LogWarning("No searches have been set to be run.");
         }
+		JobSitePluginBuilder::updateDBResultFilterTypes();
 
         endLogSection("Stage 1");
     }

@@ -318,7 +318,7 @@ class ConfigBuilder
                 setConfigurationSetting('google_maps_api_key', $gsoset['google_maps_api_key']);
             }
 
-            $allJobSitesByKey = JobSitePluginBuilder::getAllJobSites(false);
+            $allJobSitesByKey = JobSitePluginBuilder::getJobSites(false);
             foreach ($gsoset as $gsoKey => $gso)
             {
                 if(!empty($gso))
