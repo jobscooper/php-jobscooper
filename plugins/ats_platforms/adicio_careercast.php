@@ -459,13 +459,6 @@ class PluginTheLancet extends AbstractAdicioCareerCast
     protected $childSiteURLBase = 'http://careers.thelancet.com';
 }
 
-
-class PluginClevelandDotCom extends AbstractAdicioCareerCast
-{
-    protected $JobSiteName = 'ClevelandDotCom';
-    protected $childSiteURLBase = 'http://jobs.cleveland.com';
-}
-
 class PluginVictoriaTXAdvocate extends AbstractAdicioCareerCast
 {
     protected $JobSiteName = 'VictoriaTXAdvocate';

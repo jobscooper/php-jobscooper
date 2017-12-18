@@ -1,0 +1,108 @@
+{
+  "jobsite_plugins": [
+    {
+      "JobSiteName": "TheJobsNetwork",
+      "BaseURL": "https://jobs.thejobsnetwork.com",
+      "SourceURL": "https://jobs.thejobnetwork.com/Jobs/{KEYWORDS}-jobs-in-{Place}-{RegionCode}?startindex={ITEM_NUMBER}&radius=50&sorter=3",
+      "CountryCodes": [
+        "US"
+      ],
+      "AdditionalFlags": [
+        "C__JOB_KEYWORD_PARAMETER_SPACES_RAW_ENCODE",
+        "C__JOB_LOCATION_REQUIRES_LOWERCASE",
+        "C__JOB_RESULTS_SHOWN_IN_DATE_DESCENDING_ORDER",
+        "C__JOB_ITEMCOUNT_STARTSATZERO__"
+      ],
+      "Collections": [
+        {
+          "Name": "PageFields",
+          "Fields": [
+            {
+              "Name": "NoPostsFound",
+              "Selector": "div#search-results-title div span",
+              "Index": 0,
+              "Extract": "TEXT",
+              "Callback": "matchesNoResultsPattern",
+              "CallbackParameter": "No jobs"
+            },
+            {
+              "Name": "TotalPostCount",
+              "Selector": "span#searchText",
+              "Index": 0,
+              "Attribute": "text",
+              "Type": "CSS"
+            },
+            {
+              "Name": "JobPostItem",
+              "Selector": "div.Job-container",
+              "Extract": "CSS",
+              "Attribute": "collection",
+              "Type": "CSS"
+            }
+          ]
+        },
+        {
+          "Name": "ItemFields",
+          "Fields": [
+            {
+              "Name": "Title",
+              "Selector": "span.Pos-title",
+              "Extract": "TEXT",
+              "Index" : 0,
+              "Attribute": "text",
+              "Type": "CSS"
+            },
+            {
+              "Name": "Url",
+              "Selector": "a",
+              "Extract": "ATTR",
+              "Attribute": "href",
+              "Index": 0,
+              "Type": "CSS"
+            },
+            {
+              "Name": "JobSitePostId",
+              "Extract": "REGEX",
+              "Type": "REGEX",
+              "Field": "Url",
+              "Pattern": "/job\/(\\d+)/"
+            },
+            {
+              "Name": "Company",
+              "Selector": "span.Company-name",
+              "Index": 0,
+              "Extract": "TEXT",
+              "Type": "CSS"
+            },
+            {
+              "Name": "Location",
+              "Selector": "span.Location",
+              "Index": 0,
+              "Extract": "TEXT",
+              "Type": "CSS"
+            },
+            {
+              "Name": "EmploymentType",
+              "Selector": "span.Engage-type",
+              "Index": 0,
+              "Extract": "TEXT",
+              "Type": "CSS"
+            },
+            {
+              "Name": "PostedAt",
+              "Selector": "span.Normal-date",
+              "Index": 0,
+              "Attribute": "node",
+              "Type": "CSS",
+              "Callback": "combineTextAllChildren"
+            }
+          ]
+        }
+      ],
+      "Pagination": {
+        "Type": "PAGE-VIA-URL",
+        "PageLimit": 25
+      }
+    }
+  ]
+}
