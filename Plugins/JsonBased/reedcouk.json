@@ -1,0 +1,97 @@
+{
+  "JobSiteName": "Reed",
+  "SourceURL": "https://www.reed.co.uk/jobs/jobs-in-***LOCATION:{Place}***?keywords=***KEYWORDS***&proximity=20&jobtitleonly=false&pageno=***PAGE_NUMBER***",
+  "CountryCodes" : ["UK"],
+  "AdditionalFlags" : ["C__JOB_KEYWORD_PARAMETER_SPACES_AS_DASHES", "C__JOB_LOCATION_REQUIRES_LOWERCASE"],
+  "Collections": [
+    {
+      "Name": "PageFields",
+      "Fields": [
+        {
+          "Name": "TotalPostCount",
+          "Selector": "div.page-h1-title span.count",
+          "Index": 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobPostItem",
+          "Selector": "article.job-result",
+          "Attribute": "collection",
+          "Index": 0,
+          "Type": "CSS"
+        }
+      ]
+    },
+    {
+      "Name": "ItemFields",
+      "Fields": [
+        {
+          "Name": "Title",
+          "Selector": "h3.title a",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Url",
+          "Selector": "h3.title a",
+          "Attribute": "href",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobSitePostId",
+          "Selector": "h3.title a",
+          "Attribute": "data-id",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Location",
+          "Selector": "ul li.location",
+          "Attribute": "text",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Company",
+          "Selector": "div.posted-by a",
+          "Attribute": "text",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "EmploymentType",
+          "Selector": "div.metadata ul li.time",
+          "Attribute": "text",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "EmploymentType",
+          "Selector": "div.metadata ul li.time",
+          "Attribute": "text",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "PayRange",
+          "Selector": "div.metadata ul li.salary",
+          "Attribute": "text",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "PostedAt",
+          "Selector": "div.posted-by",
+          "Attribute": "text",
+          "Pattern": "/.*?Posted\\s+(\\d{1,2}\\s\\w+\\s+\\d{2,4})\\s*.*/",
+          "Type": "CSS"
+        }
+      ]
+    }
+  ],
+  "Pagination": {
+    "PageLimit": 25,
+    "Type": "PAGE-VIA-URL"
+  }
+}

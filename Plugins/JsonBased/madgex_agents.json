@@ -1,0 +1,76 @@
+{
+    "jobsite_plugins": [
+        {
+            "JobSiteName": "TheGuardian",
+            "SiteReferenceKey": "jobs.theguardian",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "UK"
+            ]
+        },
+        {
+            "JobSiteName": "LocalworkCA",
+            "SiteReferenceKey": "www.localwork.ca/searchjobs",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "CA"
+            ]
+        },
+        {
+            "JobSiteName": "MediaBistro",
+            "SiteReferenceKey": "www.mediabistro.com/jobs/search",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "S"
+            ]
+        },
+        {
+            "JobSiteName": "WashingtonPost",
+            "SiteReferenceKey": "jobs.washingtonpost",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "US"
+            ]
+        },
+        {
+            "JobSiteName": "JobfinderUSA",
+            "SiteReferenceKey": "www.jobfinderusa",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "US"
+            ]
+        },
+        {
+            "JobSiteName": "GreatJobSpot",
+            "SiteReferenceKey": "www.greatjobspot",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "US"
+            ]
+        },
+        {
+            "JobSiteName": "ExecAppointments",
+            "SiteReferenceKey": "www.exec-appointments",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "US"
+            ]
+        },
+        {
+            "JobSiteName": "Economist",
+            "SiteReferenceKey": "jobs.economist",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "US"
+            ]
+        },
+        {
+            "JobSiteName": "StarTribune",
+            "SiteReferenceKey": "jobs.startribune",
+            "PluginExtendsClassName": "AbstractMadgexATS",
+            "CountryCodes": [
+                "US"
+            ]
+        }
+    ]
+}

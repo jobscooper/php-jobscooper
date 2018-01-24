@@ -1,0 +1,90 @@
+{
+  "JobSiteName": "Salesforce",
+  "SourceURL": "http://salesforce.careermount.com/candidate/job_search/quick/results/***PAGE_NUMBER***?location=***LOCATION***&sort_dir=desc&sort_field=post_date&relevance=false",
+  "LocationType": "location-city",
+  "PluginExtendsClassName" : "AbstractSalesforce",
+  "Collections": [
+    {
+      "Name": "PageFields",
+      "Fields": [
+        {
+          "Name": "NoPostsFound",
+          "Selector": "div.main p b",
+          "Index" : 0,
+          "Callback" : "matchesNoResultsPattern",
+          "CallbackParameter": "no jobs found",
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "TotalPostCount",
+          "Selector": "td.td-result",
+          "Pattern": "/.*? of (\\d+).*/",
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobPostItem",
+          "Selector": ".s-res",
+          "Attribute": "collection",
+          "Type": "CSS"
+        }
+      ]
+    },
+    {
+      "Name": "ItemFields",
+      "Fields": [
+        {
+          "Name": "Title",
+          "Selector": "h3 a",
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "Url",
+          "Selector": "h3 a",
+          "Attribute": "href",
+          "Index": 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Company",
+          "Value": "Salesforce",
+          "Type": "STATIC"
+        },
+        {
+          "Name": "Location",
+          "Selector": "p.search-result-item-company-name a",
+          "Attribute": "collection",
+          "Type": "CSS",
+          "Callback": "combineTextAllNodes"
+        },
+        {
+          "Name": "Department",
+          "Selector": "table.searchResAdd tr td a",
+          "Index" : 1,
+          "Attribute": "text",
+          "Type": "CSS",
+          "JoinResult": true
+        },
+
+        {
+          "Name": "JobSitePostId",
+          "Pattern": "/.*?([0-9]+).*/",
+          "Type": "SOURCEFIELD",
+          "Field": "Url"
+        },
+        {
+          "Name": "PostedAt",
+          "Selector": "span.search-result-item-post-date",
+          "Pattern": "/Date posted:\\s*([\\d\\/]+)/",
+          "Type": "CSS"
+        }
+      ]
+    }
+  ],
+  "Pagination": {
+    "Type": "page-via-url",
+    "PageLimit": 10
+  }
+}

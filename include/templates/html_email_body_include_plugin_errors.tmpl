@@ -1,9 +1,0 @@
-            <h2>Errors in Job Search Plugins</h2>
-            The following site plugins on <strong>{{server}}</strong> returned an error or had zero listings found
-            unexpectedly running <strong>{{app_version}}</strong>:
-            <br/>
-            <br/>
-            {{#plugins_with_errors}}
-                <!-- errors index: {{@index}}, key: {{@key}} -->
-                {{>html_email_error_item_partial}}
-            {{/plugins_with_errors}}

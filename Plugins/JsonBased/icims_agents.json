@@ -1,0 +1,118 @@
+{
+    "jobsite_plugins": [
+        {
+            "JobSiteName": "FredHutch",
+            "SiteReferenceKey": "hub-fhcrc",
+            "PluginExtendsClassName": "AbstractIcimsATS",
+            "JobListingsPerPage": 167,
+            "TagIndexes": {
+                "PostedAt": null,
+                "JobSitePostId": 0,
+                "Title": 1,
+                "Url": 1,
+                "Department": null,
+                "Location": 2
+            },
+            "Collections": [
+                {
+                    "Name": "PageFields",
+                    "Fields": [
+                        {
+                            "Name": "JobPostItem",
+                            "Selector": "div.iCIMS_MainWrapper table tbody tr",
+                            "Attribute": "collection",
+                            "Index" : 0,
+                            "Type": "CSS"
+                        },
+                        {
+                            "Name": "TotalResultPageCount",
+                            "Selector": "div.iCIMS_Paginator_Bottom select[paginator='true'] option:last-child",
+                            "Attribute": "collection",
+                            "Index" : 0,
+                            "Type": "CSS"
+                        }
+                    ]
+                },
+                {
+                    "Name": "ItemFields",
+                    "Fields": [
+                        {
+                            "Name": "Title",
+                            "Selector": "td.iCIMS_JobsTableField_2 a",
+                            "Index" : 0,
+                            "Type": "CSS"
+                        },
+                        {
+                            "Name": "Url",
+                            "Selector": "td.iCIMS_JobsTableField_2 a",
+                            "Attribute": "href",
+                            "Index" : 0,
+                            "Type": "CSS"
+                        },
+                        {
+                            "Name": "JobSitePostId",
+                            "Selector": "td.iCIMS_JobsTableField_1",
+                            "Index" : 0,
+                            "Pattern": "/(\\d+)/",
+                            "Type": "CSS"
+                        },
+                        {
+                            "Name": "Location",
+                            "Selector": "td.iCIMS_JobsTableField_3",
+                            "Attribute": "text",
+                            "Pattern": "/\\s*Location:(.*)/",
+                            "Index" : 0,
+                            "Type": "CSS"
+                        }
+                    ]
+                }
+            ],
+            "Pagination": {
+                "PageLimit" : 200
+            }
+        },
+        {
+            "JobSiteName": "RedHat",
+            "SiteReferenceKey": "careers-redhat",
+            "SearchUrlFormat" : "https://careers-redhat.icims.com/jobs/search?schemaId=%24T%7BJob%7D.%24T%7BJobPost%7D.%24F%7BPostedDateTime%7D&o=D",
+            "PluginExtendsClassName": "AbstractIcimsATS",
+            "TagIndexes": {
+                "PostedAt": 0,
+                "JobSitePostId": 1,
+                "Title": 2,
+                "Url": 2,
+                "Department": 3,
+                "Location": 4
+            }
+        },
+        {
+            "JobSiteName": "ParivedaSolutions",
+            "SiteReferenceKey": "careers-parivedasolutions",
+            "PluginExtendsClassName": "AbstractIcimsATS",
+            "TagIndexes": {
+                "PostedAt": null,
+                "JobSitePostId": 0,
+                "Title": 1,
+                "Url": 1,
+                "Department": null,
+                "Location": 2
+            }
+        },
+        {
+            "JobSiteName": "HibbettSports",
+            "SiteReferenceKey": "retailcareers-hibbett",
+            "TagIndexes": {
+                "Title": 0,
+                "Url": 0,
+                "JobSitePostId": null,
+                "Department": 1,
+                "Location": 2,
+                "PostedAt": null
+            },
+            "PluginExtendsClassName": "AbstractIcimsATS",
+            "Pagination": {
+                "PageDelaySeconds": 5
+            }
+        }
+    ]
+}

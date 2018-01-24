@@ -1,0 +1,89 @@
+{
+  "JobSiteName": "Craigslist",
+  "BaseURL": "http://seattle.craigslist.org",
+  "SourceURL": "http://***LOCATION***.craigslist.org/search/jjj?sort=date&query=***KEYWORDS***&srchType=T&searchNearby=1&s=***ITEM_NUMBER***",
+  "LocationType": "location-city",
+  "CountryCodes" : ["US"],
+  "AdditionalFlags" : [ "C__JOB_RESULTS_SHOWN_IN_DATE_DESCENDING_ORDER", "C__JOB_LOCATION_REQUIRES_LOWERCASE", "C__JOB_KEYWORD_SUPPORTS_QUOTED_KEYWORDS"],
+  "nMaxJobsToReturn" : 2500,
+  "PluginExtendsClassName" : "AbstractCraigslist",
+  "Collections": [
+    {
+      "Name": "PageFields",
+      "Fields": [
+        {
+          "Name": "TotalPostCount",
+          "Selector": "span.totalcount",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "NoPostsFound",
+          "Selector": "div.paginator span.buttons span.button",
+          "Index" : 0,
+          "Callback" : "matchesNoResultsPattern",
+          "CallbackParameter": "no results",
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobPostItem",
+          "Selector": "ul.rows li.result-row",
+          "Attribute": "collection",
+          "Type": "CSS"
+        }
+      ]
+    },
+    {
+      "Name": "ItemFields",
+      "Fields": [
+        {
+          "Name": "Title",
+          "Selector": "a.result-title",
+          "Attribute": "text",
+          "Index": 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Url",
+          "Selector": "a.result-title",
+          "Attribute": "href",
+          "Index": 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobSitePostId",
+          "Selector": "a.result-title",
+          "Attribute": "data-id",
+          "Index": 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Location",
+          "Selector": "span.result-hood",
+          "Index" : 0,
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "Department",
+          "Selector": "td.listing-department",
+          "Index" : 0,
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "PostedAt",
+          "Selector": "time.result-date",
+          "Index" : 0,
+          "Attribute": "datetime",
+          "Type": "CSS"
+        }
+      ]
+    }
+  ],
+  "Pagination": {
+    "Type": "PAGE-VIA-URL",
+    "PageLimit": 120
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "jobsite_plugins": [
+    {
+      "JobSiteName": "Marriott",
+      "PhpClassName" : "INPROGRESSMarriott",
+      "SourceURL": "https://jobs.marriott.com/jobs?page=1&sortBy=posted_date&descending=true",
+      "PluginExtendsClassName" : "AbstractTaleoATS",
+      "AdditionalFlags" : ["C__JOB_RESULTS_SHOWN_IN_DATE_DESCENDING_ORDER"],
+      "additionalLoadDelaySeconds" : 5,
+      "Collections": [
+        {
+          "Name": "PageFields",
+          "Fields": [
+            {
+              "Name": "NoPostsFound",
+              "Selector": "div#no-search-results h3",
+              "Index": 0,
+              "Callback": "matchesNoResultsPattern",
+              "CallbackParameter": "No Search Results",
+              "Attribute": "text",
+              "Type": "CSS"
+            },
+            {
+              "Name": "TotalPostCount",
+              "Selector": "h5#search-results-indicator span.ext-search-summary",
+              "Type": "CSS",
+              "Pattern": "/([0-9,]+)/"
+            },
+            {
+              "Name": "JobPostItem",
+              "Selector": "div.search-results-list ul li",
+              "Attribute": "collection",
+              "Type": "CSS"
+            }
+          ]
+        },
+        {
+          "Name": "ItemFields",
+          "Fields": [
+            {
+              "Name": "Title",
+              "Type": "MICRODATA"
+            },
+            {
+              "Name": "Url",
+              "Type": "MICRODATA"
+            },
+            {
+              "Name": "Location",
+              "Type": "MICRODATA"
+            },
+            {
+              "Name": "Category",
+              "Type": "MICRODATA"
+            },
+            {
+              "Name": "JobSitePostId",
+              "Selector" : "p.req-id-lg",
+              "Pattern": "/Req ID:\\s*(.*)/i",
+              "Attribute": "text",
+              "Type": "CSS"
+            },
+            {
+              "Name": "PostedAt",
+              "Selector": "div.job-result__date",
+              "Index" : 0,
+              "Attribute": "text",
+              "Type": "CSS"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

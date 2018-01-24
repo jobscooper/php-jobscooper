@@ -1,0 +1,76 @@
+{
+  "JobSiteName": "Facebook",
+  "SourceURL": "https://www.facebook.com/careers/search/?q=&location=***LOCATION***",
+  "LocationType": "location-city",
+  "CountryCodes" : ["UK", "CA", "US"],
+  "Collections": [
+    {
+      "Name": "PageFields",
+      "Fields": [
+        {
+          "Name": "TotalPostCount",
+          "Selector": "div._1dc4",
+          "Pattern": "/.*? back ([,\\d]+).*/",
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobPostItem",
+          "Selector": "div._3k6i",
+          "Attribute": "collection",
+          "Type": "CSS"
+        }
+      ]
+    },
+    {
+      "Name": "ItemFields",
+      "Fields": [
+        {
+          "Name": "Title",
+          "Selector": "div._77 div div a",
+          "Attribute": "text",
+          "Index": 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Url",
+          "Selector": "div._77 div div a",
+          "Attribute": "href",
+          "Index": 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Company",
+          "Value": "Facebook",
+          "Type": "STATIC"
+        },
+        {
+          "Name": "Location",
+          "Selector": "div._72 div div",
+          "Attribute": "collection",
+          "Type": "CSS",
+          "Callback": "combineTextAllNodes"
+        },
+        {
+          "Name": "Department",
+          "Selector": "div._77 div div",
+          "Index" : 1,
+          "Attribute": "text",
+          "Type": "CSS",
+          "JoinResult": true
+        },
+
+        {
+          "Name": "JobSitePostId",
+          "Pattern": "/.*?id=([0-9]+).*/",
+          "Type": "SOURCEFIELD",
+          "Field": "Url"
+        }
+      ]
+    }
+  ],
+  "Pagination": {
+    "Type": "PAGE-NONE",
+    "PageLimit" : 2000
+  }
+}

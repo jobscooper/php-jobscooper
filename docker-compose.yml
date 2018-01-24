@@ -1,0 +1,63 @@
+version: "3.2"
+
+services:
+  selenium:
+    container_name: js4-selenium.$CONTAINER_TAG
+    image: selenium/standalone-firefox:latest
+    ports:
+      - 4448:4448
+      - 5901:5900
+    shm_size: 2g
+    environment:
+      - SE_OPTS=-port 4448 -enablePassThrough false
+      - JAVA_OPTS=-Xmx512m -Dwebdriver.enable.native.events=1
+      - JOBSCOOPER_OUTPUT
+
+  mysql_server:
+    environment:
+      - MYSQL_ROOT_PASSWORD
+    image: mysql
+    container_name: js4-mysql_server.$CONTAINER_TAG
+    volumes:
+      - type: bind
+        source: $JOBSCOOPER_HOST_VOLDIR/docker_mysql
+        target: /var/lib/mysql
+#        volume:
+#          nocopy: true
+    ports:
+      - 3901:3306
+
+  js4:
+#    build:
+#        context: ./
+#        dockerfile: Dockerfile
+    environment:
+      - JOBSCOOPER_OUTPUT
+      - NLTK_DATA
+      - JOBSCOOPER_PROPEL_INI
+    image: "${REPONAME}selner/js4-${BRANCH}:latest"
+    volumes:
+      - type: bind
+        source: "$JOBSCOOPER_HOST_VOLDIR"
+        target: /var/local/jobs_scooper
+#        volume:
+#          nocopy: true
+      - type: bind
+        source: "$JOBSCOOPER_HOST_VOLDIR"
+        target: /private/var/local/jobs_scooper
+#        volume:
+#          nocopy: true
+      - type: bind
+        source: "$JOBSCOOPER_HOST_VOLDIR/configs/propel.ini"
+        target: /private/var/local/jobs_scooper/configs/propel.ini
+#        volume:
+#          nocopy: true
+    container_name: js4-$CONTAINER_TAG
+    command: "${DOCKER_RUN_CMD:-bash -C '/var/local/jobs_scooper/start_jobscooper.sh'}"
+    links:
+      - "mysql_server"
+      - "selenium"
+    depends_on:
+      - "mysql_server"
+      - "selenium"
+

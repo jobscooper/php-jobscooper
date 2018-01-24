@@ -1,0 +1,75 @@
+{
+  "JobSiteName": "Startwire",
+  "SourceURL": "https://www.startwire.com/search",
+  "AdditionalFlags" : [ "C__JOB_RESULTS_SHOWN_IN_DATE_DESCENDING_ORDER"],
+  "Collections": [
+    {
+      "Name": "PageFields",
+      "Fields": [
+      {
+          "Name": "JobPostItem",
+          "Selector": ".js-job",
+          "Attribute": "collection",
+          "Type": "CSS"
+        },
+        {
+          "Name": "TotalPostCount",
+          "Selector": "div.count-jobs div.number",
+          "Type": "CSS"
+        },
+        {
+          "Name": "pages_count",
+          "Selector": "div.js-infinite-scroll",
+          "Attribute": "data-total-pages",
+          "Type": "CSS"
+        }
+      ]
+    },
+    {
+      "Name": "ItemFields",
+      "Fields": [
+        {
+          "Name": "Title",
+          "Selector": ".title",
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "Location",
+          "Selector": "span.location",
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "Company",
+          "Selector": ".company-name",
+          "Attribute": "text",
+          "Type": "CSS"
+        },
+        {
+          "Name": "Url",
+          "Selector": "a[class*='link-job']",
+          "Attribute": "href",
+          "Index": 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobSitePostId",
+          "Selector": "div.js-job",
+          "Attribute": "data-hash-uniq",
+          "Index": 0
+        },
+        {
+          "Name": "PostedAt",
+          "Selector": "div.posted-date span",
+          "Attribute": "text",
+          "Type": "CSS"
+        }
+      ]
+    }
+  ],
+  "Pagination": {
+    "Type": "INFINITE-SCROLL-NO-CONTROL",
+    "PageLimit" : 40
+  }
+}

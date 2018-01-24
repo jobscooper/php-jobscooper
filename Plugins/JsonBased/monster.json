@@ -1,0 +1,104 @@
+{
+  "jobsite_plugins": [
+    {
+      "JobSiteName": "Monster",
+      "BaseURL": "https://www.monster.com",
+      "SourceURL": "https://www.monster.com/jobs/search/?q=***KEYWORDS***&sort=dt.rv.di&where=***LOCATION***&tm=3&rad=50",
+      "LocationType": "location-city-comma-statecode-underscores-and-dashes",
+      "CountryCodes": [
+        "US"
+      ],
+      "AdditionalFlags": [
+        "C__JOB_KEYWORD_PARAMETER_SPACES_AS_DASHES",
+        "C__JOB_RESULTS_SHOWN_IN_DATE_DESCENDING_ORDER"
+      ],
+      "Collections": [
+        {
+          "Name": "PageFields",
+          "Fields": [
+            {
+              "Name": "NoPostsFound",
+              "Selector": "div.jsresultsheader h1",
+              "Index": 0,
+              "Callback": "matchesNoResultsPattern",
+              "CallbackParameter": "Sorry"
+            },
+            {
+              "Name": "TotalPostCount",
+              "Selector": "h2.page-title",
+              "Index": 0,
+              "Pattern": "/(\\d+).*/",
+              "Attribute": "text",
+              "Type": "CSS"
+            },
+            {
+              "Name": "JobPostItem",
+              "Selector": "article.js_result_row",
+              "Attribute": "collection",
+              "Type": "CSS"
+            }
+          ]
+        },
+        {
+          "Name": "ItemFields",
+          "Fields": [
+            {
+              "Name": "Title",
+              "Selector": "div.jobTitle h2 a span",
+              "Attribute": "text",
+              "Type": "CSS"
+            },
+            {
+              "Name": "Url",
+              "Selector": "div.jobTitle h2 a",
+              "Attribute": "href",
+              "Index": 0,
+              "Type": "CSS"
+            },
+            {
+              "Name": "JobSitePostId",
+              "Selector": "div.jobTitle h2 a",
+              "Attribute": "data-m_impr_j_postingid",
+              "Index": 0,
+              "Type": "CSS"
+            },
+            {
+              "Name": "Company",
+              "Selector": "div.company a",
+              "Index": 0,
+              "Attribute": "title",
+              "Type": "CSS"
+            },
+            {
+              "Name": "Location",
+              "Selector": "div.job-specs-location p a",
+              "Index": 0,
+              "Attribute": "title",
+              "Type": "CSS"
+            },
+            {
+              "Name": "PostedAt",
+              "Selector": "div.job-specs-date p time",
+              "Index": 0,
+              "Attribute": "datetime",
+              "Type": "CSS"
+            }
+          ]
+        }
+      ],
+      "Pagination": {
+        "Type": "NEXT-BUTTON",
+        "Selector": "a.page-link.next",
+        "PageLimit": 25
+      }
+    },
+    {
+    "JobSiteName": "MonsterUK",
+    "BaseURL": "https://www.monster.co.uk",
+    "SourceURL": "https://www.monster.co.uk/jobs/search/?q=***KEYWORDS***&where=***LOCATION***&client=power&cy=uk&rad=20&intcid=swoop_HeroSearch_UK",
+    "LocationType": "location-city-comma-statecode-underscores-and-dashes",
+    "CountryCodes" : ["GB"],
+      "PluginExtendsClassName" : "PluginMonster"
+    }
+  ]
+}

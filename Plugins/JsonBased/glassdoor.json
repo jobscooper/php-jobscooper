@@ -1,0 +1,72 @@
+{
+  "JobSiteName": "Glassdoor",
+  "BaseURL": "http://www.glassdoor.com/",
+  "SourceURL": "https://www.glassdoor.com/Job/jobs.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword=***KEYWORDS***&sc.keyword=***KEYWORDS***&locT=&locId=&jobType=",
+  "PluginExtendsClassName" : "AbstractGlassdoor",
+  "LocationType": "location-city-comma-statecode",
+  "CountryCodes" : ["US"],
+  "Collections": [
+    {
+      "Name": "PageFields",
+      "Fields": [
+        {
+          "Name": "TotalPostCount",
+          "Selector": "p.jobsCount",
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobPostItem",
+          "Selector": "li.jl",
+          "Attribute": "collection",
+          "Type": "CSS"
+        }
+      ]
+    },
+    {
+      "Name": "ItemFields",
+      "Fields": [
+        {
+          "Name": "Title",
+          "Selector": "div.flexbox a.jobLink",
+          "Type": "CSS"
+        },
+        {
+          "Name": "Url",
+          "Selector": "div.flexbox a.jobLink",
+          "Attribute": "href",
+          "Type": "CSS"
+        },
+        {
+          "Name": "JobSitePostId",
+          "Selector": "span.save-job-button",
+          "Attribute": "data-job-id"
+        },
+        {
+          "Name": "Location",
+          "Selector": "div.empLoc span.subtle",
+          "Attribute": "text",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "Company",
+          "Selector": "div.empLoc div",
+          "Attribute": "text",
+          "Index" : 0,
+          "Type": "CSS"
+        },
+        {
+          "Name": "PostedAt",
+          "Selector": "span.hideHH",
+          "Attribute": "text",
+          "Type": "CSS"
+        }
+      ]
+    }
+  ],
+  "Pagination": {
+    "PageLimit": 30,
+    "Type": "NEXT-BUTTON",
+    "Selector": "li.next a"
+  }
+}

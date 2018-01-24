@@ -1,0 +1,380 @@
+<database name="default" defaultIdMethod="native"
+          namespace="JobScooper\DataAccess"
+
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          defaultPhpNamingMethod="phpname"
+          xsi:noNamespaceSchemaLocation="file://code/job_scooper_v4/vendor/propel/propel/resources/xsd/database.xsd"
+>
+
+    <!--
+        *************************************************
+
+                        JobSite
+
+        *************************************************
+    -->
+
+    <table name="job_site" phpName="JobSiteRecord" allowPkInsert="true" heavyIndexing="true">
+
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        PRIMARY KEY
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
+        <column name="jobsite_key" phpName="JobSiteKey" type="varchar" size="100" primaryString="true"
+                primaryKey="true"/>
+
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        OTHER COLUMNS
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
+        <column name="plugin_class_name" phpName="PluginClassName" type="varchar" size="100"/>
+
+        <column name="display_name" phpName="DisplayName" type="varchar" size="255"/>
+
+        <column name="is_disabled" phpName="isDisabled" type="boolean" defaultValue="false"/>
+
+        <column name="results_filter_type" phpName="ResultsFilterType" type="enum"
+                valueSet="unknown, all-only, all-by-location, user-filtered" defaultValue="unknown"/>
+    </table>
+
+
+    <!--
+        *************************************************
+
+                        GeoLocation
+
+        *************************************************
+    -->
+
+
+    <table name="geolocation" phpName="GeoLocation" allowPkInsert="true" heavyIndexing="true">
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        PRIMARY KEY
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
+        <column name="geolocation_id" phpName="GeoLocationId" type="integer" required="true" primaryKey="true"
+                autoIncrement="true"/>
+
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        OTHER COLUMNS
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
+
+        <column name="display_name" phpName="DisplayName" type="varchar" size="100" required="true"
+                primaryString="true"/>
+
+        <column name="geolocation_key" phpName="GeoLocationKey" type="varchar" size="100" required="true"/>
+
+        <column name="place" phpName="Place" type="varchar" size="100"/>
+        <column name="county" phpName="County" type="varchar" size="100"/>
+        <column name="region" phpName="Region" type="varchar" size="100"/>
+        <column name="regioncode" phpName="RegionCode" type="varchar" size="50"/>
+        <column name="country" phpName="Country" type="varchar" size="100"/>
+        <column name="countrycode" phpName="CountryCode" type="varchar" size="5"/>
+
+        <column name="latitude" phpName="Latitude" type="float"/>
+        <column name="longitude" phpName="Longitude" type="float"/>
+        <behavior name="geocodable">
+            <parameter name="auto_update" value="false"/>
+            <parameter name="latitude_column" value="latitude"/>
+            <parameter name="longitude_column" value="longitude"/>
+            <parameter name="type" value="DOUBLE"/>
+            <parameter name="size" value="11"/>
+            <parameter name="scale" value="8"/>
+        </behavior>
+
+        <column name="alternate_names" phpName="AlternateNames" type="array"/>
+
+    </table>
+
+    <!--
+        *************************************************
+
+                            JobPosting
+
+        *************************************************
+    -->
+
+
+    <table name="jobposting" phpName="JobPosting" allowPkInsert="true" heavyIndexing="true">
+
+        <!-- ~~~~~~~~~  PRIMARY KEY  ~~~~~~~~~~~~~~~~~~  -->
+        <column name="jobposting_id" phpName="JobPostingId" type="integer" required="true" primaryKey="true"
+                autoIncrement="true"/>
+
+        <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                        OTHER COLUMNS
+             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  -->
+        <!--
+            Alternate unique key for every job post is jobsite_key + jobsite post id
+        -->
+        <column name="jobsite_key" phpName="JobSiteKey" type="varchar" size="100" required="true"/>
+        <foreign-key foreignTable="job_site" phpName="JobSiteFromJP">
+            <reference local="jobsite_key" foreign="jobsite_key"/>
+        </foreign-key>
+
+
+        <column name="jobsite_post_id" phpName="JobSitePostId" type="varchar" size="1024" required="true"/>
+
+        <!--
+            Job posting facts
+        -->
+        <column name="title" phpName="Title" type="varchar" size="255" required="true"/>
+        <column name="url" phpName="Url" type="varchar" size="2500" required="true"/>
+        <column name="employment_type" phpName="EmploymentType" type="varchar" size="100"/>
+        <column name="pay_range" phpName="PayRange" type="varchar" size="100"/>
+        <column name="company" phpName="Company" type="varchar" size="100"/>
+        <column name="location" phpName="Location" type="varchar" size="255"/>
+        <column name="department" phpName="Department" type="varchar" size="255"/>
+        <column name="category" phpName="Category" type="varchar" size="100"/>
+
+        <!--
+            Date & times for various events related to this particular job posting
+        -->
+        <column name="last_updated_at" phpName="UpdatedAt" type="timestamp" required="true"/>
+        <column name="job_posted_date" phpName="PostedAt" type="timestamp"/>
+        <column name="first_seen_at" phpName="FirstSeenAt" type="timestamp" required="true"/>
+        <column name="post_removed_at" phpName="RemovedAt" type="timestamp"/>
+        <behavior name="timestampable">
+            <parameter name="create_column" value="first_seen_at"/>
+            <parameter name="update_column" value="last_updated_at"/>
+        </behavior>
+
+        <!--
+            GeoLocation Data for the Job Posting
+        -->
+        <column name="location_display_value" phpName="LocationDisplayValue" type="varchar" size="255"
+        />
+        <column name="geolocation_id" phpName="GeoLocationId" type="integer"/>
+        <foreign-key foreignTable="geolocation" phpName="GeoLocationFromJP">
+            <reference local="geolocation_id" foreign="geolocation_id"/>
+        </foreign-key>
+
+        <!--<column name="latitude" phpName="Latitude" type="float"/>-->
+        <!--<column name="longitude" phpName="Longitude" type="float"/>-->
+        <!--<behavior name="geocodable">-->
+            <!--<parameter name="auto_update" value="false"/>-->
+            <!--<parameter name="latitude_column" value="latitude"/>-->
+            <!--<parameter name="longitude_column" value="longitude"/>-->
+            <!--<parameter name="type" value="DOUBLE"/>-->
+            <!--<parameter name="size" value="11"/>-->
+            <!--<parameter name="scale" value="8"/>-->
+        <!--</behavior>-->
+
+        <!--
+            Listing Duplication Tracking
+        -->
+        <column name="duplicates_posting_id" phpName="DuplicatesJobPostingId" type="integer"/>
+        <foreign-key foreignTable="jobposting" phpName="DuplicateJobPosting">
+            <reference local="duplicates_posting_id" foreign="jobposting_id"/>
+        </foreign-key>
+
+        <!--
+            The following columns are automatically set via code in the JobPosting class
+        -->
+        <column name="key_company_and_title" phpName="KeyCompanyAndTitle" type="varchar" size="255" required="true"/>
+
+    </table>
+
+    <!--
+        *************************************************
+
+                            User
+
+        *************************************************
+    -->
+
+
+    <table name="user" phpName="User" allowPkInsert="true">
+        <!-- ~~~~~~~~~  PRIMARY KEY  ~~~~~~~~~~~~~~~~~~  -->
+        <column name="user_id" phpName="UserId" type="integer" required="true" autoIncrement="true"
+                primaryKey="true"/>
+
+        <!-- ~~~~~~~~~  OTHER COLUMNS  ~~~~~~~~~~~~~~~~  -->
+        <column name="user_slug" phpName="UserSlug" type="varchar" size="128" required="true" primaryString="true"/>
+        <behavior name="sluggable">
+            <parameter name="slug_column" value="user_slug"/>
+            <parameter name="slug_pattern" value="{EmailAddress}"/>
+            <parameter name="replace_pattern" value="/[^\w\/]+/u"/>
+            <parameter name="replacement" value=""/>
+            <parameter name="separator" value="-"/>
+            <parameter name="permanent" value="true"/>
+        </behavior>
+
+        <column name="email_address" phpName="EmailAddress" type="varchar" size="128" required="true"/>
+        <column name="name" phpName="Name" type="varchar" size="128" required="true" defaultValue="email_address"/>
+
+        <column name="search_keywords" phpName="SearchKeywords" type="array" required="false"/>
+        <column name="search_locations" phpName="SearchLocations" type="array" required="false"/>
+        <column name="input_files_json" phpName="InputFilesJson" type="LONGVARCHAR" required="false"/>
+    </table>
+
+    <!--
+        *************************************************
+
+                  User Search Pair
+
+        *************************************************
+    -->
+
+    <table name="user_search_pair" phpName="UserSearchPair" isCrossRef="true" reloadOnUpdate="true">
+        <!-- ~~~~~~~~~  PRIMARY KEY  ~~~~~~~~~~~~~~~~~~  -->
+        <column name="user_search_pair_id" phpName="UserSearchPairId" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+
+        <!-- ~~~~~~~~~  ALTERNATE KEY  ~~~~~~~~~~~~~~~~~~  -->
+        <column name="user_id" phpName="UserId" type="integer" required="true" primaryKey="false"/>
+
+        <column name="user_keyword" phpName="UserKeyword" type="varchar" size="50" required="true"
+                primaryKey="false"/>
+
+        <column name="geolocation_id" phpName="GeoLocationId" type="integer" required="true" primaryKey="false"/>
+
+        <unique name="usp_alt_key">
+            <unique-column name="user_id"/>
+            <unique-column name="user_keyword" size="50"/>
+            <unique-column name="geolocation_id"/>
+        </unique>
+
+        <!-- ~~~~~~~~~  OTHER FACTS ~~~~~~~~~~~~~~~~  -->
+
+        <column name="is_active" phpName="IsActive" type="boolean" required="true" default="true"/>
+
+        <!-- ~~~~~~~~~  FOREIGN KEYS ~~~~~~~~~~~~~~~~  -->
+
+        <foreign-key foreignTable="user" onDelete="cascade" phpName="UserFromUS" skipSql="true" onUpdate="cascade">
+            <reference local="user_id" foreign="user_id"/>
+        </foreign-key>
+
+        <foreign-key foreignTable="geolocation" phpName="GeoLocationFromUS">
+            <reference local="geolocation_id" foreign="geolocation_id"/>
+        </foreign-key>
+
+    </table>
+
+    <!--
+        *************************************************
+
+                  User Search JobSite Run
+
+        *************************************************
+    -->
+
+
+    <table name="user_search_site_run" phpName="UserSearchSiteRun" isCrossRef="true" reloadOnUpdate="true" heavyIndexing="true">
+
+        <!-- Primary Key -->
+        <column name="user_search_site_run_id" phpName="UserSearchSiteRunId" type="integer" required="true" primaryKey="true" autoIncrement="true"/>
+
+        <!-- Alternate Key -->
+        <column name="user_search_pair_id" phpName="UserSearchPairId" type="integer" required="true"/>
+
+        <column name="jobsite_key" phpName="JobSiteKey" type="varchar" size="100" required="true" primaryKey="false"/>
+
+        <column name="app_run_id" phpName="AppRunId" type="varchar" size="75" required="true" primaryKey="false"/>
+
+        <unique name="ussr_alt_key">
+            <unique-column name="user_search_pair_id"/>
+            <unique-column name="jobsite_key" size="100"/>
+            <unique-column name="app_run_id" size="75"/>
+        </unique>
+
+
+        <!-- ~~~~~~~~~  OTHER COLUMNS  ~~~~~~~~~~~~~~~~  -->
+        <column name="user_search_site_run_key" phpName="UserSearchSiteRunKey" type="varchar" size="100" required="true"
+                primaryString="true"/>
+        <behavior name="sluggable">
+            <parameter name="slug_column" value="user_search_site_run_key"/>
+            <parameter name="slug_pattern" value="{UserSearchPairId}_{JobSiteKey}_{AppRunId}"/>
+            <parameter name="replace_pattern" value="/[^\w\/]+/u"/>
+            <parameter name="replacement" value=""/>
+            <parameter name="separator" value="-"/>
+            <parameter name="permanent" value="true"/>
+        </behavior>
+
+        <column name="date_started" phpName="StartedAt" type="timestamp"/>
+        <column name="date_ended" phpName="EndedAt" type="timestamp"/>
+
+        <index>
+            <index-column name="user_search_site_run_key" size="100"/>
+            <index-column name="date_ended"/>
+        </index>
+
+
+        <column name="search_start_url" phpName="SearchStartUrl" type="varchar" size="1024"/>
+
+        <column name="run_result_code" phpName="RunResultCode" type="enum"
+                valueSet="not-run,failed,excluded,skipped,successful" defaultValue="not-run"/>
+
+        <column name="run_error_details" phpName="RunErrorDetails" type="array"/>
+
+        <column name="run_error_page_html" phpName="RunErrorPageHtml" type="longvarchar"/>
+
+        <!-- ~~~~~~~~~  FOREIGN KEYS ~~~~~~~~~~~~~~~~  -->
+
+        <foreign-key foreignTable="job_site" onDelete="cascade" phpName="JobSiteFromUSSR">
+            <reference local="jobsite_key" foreign="jobsite_key"/>
+        </foreign-key>
+
+        <foreign-key foreignTable="user_search_pair" onDelete="cascade" onUpdate="cascade" phpName="UserSearchPairFromUSSR">
+            <reference local="user_search_pair_id" foreign="user_search_pair_id"/>
+        </foreign-key>
+
+    </table>
+
+    <!--
+        *************************************************
+
+                  User Job Match
+
+        *************************************************
+    -->
+
+
+    <table name="user_job_match" phpName="UserJobMatch" isCrossRef="true" heavyIndexing="true">
+
+        <!-- ~~~~~~~~~  ALTERNATE KEY ~~~~~~~~~~~~~~~~  -->
+
+        <column name="user_job_match_id" phpName="UserJobMatchId" type="integer" required="true"
+                autoIncrement="true"/>
+        <unique>
+            <unique-column name="user_job_match_id"/>
+        </unique>
+
+        <!-- ~~~~~~~~~  PRIMARY KEY ~~~~~~~~~~~~~~~~  -->
+
+        <column name="user_id" phpName="UserId" type="integer" required="true" primaryKey="true"/>
+
+        <column name="jobposting_id" phpName="JobPostingId" type="integer" required="true" primaryKey="true"/>
+
+        <!-- ~~~~~~~~~  OTHER COLUMNS  ~~~~~~~~~~~~~~~~  -->
+
+        <column name="is_job_match" phpName="IsJobMatch" type="boolean"/>
+
+        <column name="is_excluded" phpName="IsExcluded" type="boolean"/>
+
+        <column name="out_of_user_area" phpName="OutOfUserArea" type="boolean"/>
+
+        <column name="matched_user_keywords" phpName="MatchedUserKeywords" type="array"/>
+
+        <column name="matched_negative_title_keywords" phpName="MatchedNegativeTitleKeywords" type="array"/>
+
+        <column name="matched_negative_company_keywords" phpName="MatchedNegativeCompanyKeywords" type="array"/>
+
+        <column name="user_notification_state" phpName="UserNotificationState" type="enum"
+                valueSet="not-yet-marked,marked-ready-to-send,sent" defaultValue="not-yet-marked"/>
+
+        <column name="set_by_user_search_site_run_key" phpName="SetByUserSearchSiteRunKey" type="varchar" size="100"/>
+
+        <!-- ~~~~~~~~~  FOREIGN KEYS ~~~~~~~~~~~~~~~~  -->
+
+        <foreign-key foreignTable="user" onDelete="cascade" phpName="UserFromUJM">
+            <reference local="user_id" foreign="user_id"/>
+        </foreign-key>
+
+        <foreign-key foreignTable="jobposting" onDelete="cascade" phpName="JobPostingFromUJM">
+            <reference local="jobposting_id" foreign="jobposting_id"/>
+        </foreign-key>
+
+        <!--<foreign-key foreignTable="user_search_site_runs" onDelete="cascade" phpName="UserSearchSiteRunFromUJM">-->
+            <!--<reference local="set_by_user_search_site_run_key" foreign="user_search_site_run_key"/>-->
+        <!--</foreign-key>-->
+
+    </table>
+
+</database>

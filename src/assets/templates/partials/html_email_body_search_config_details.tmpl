@@ -1,0 +1,20 @@
+<h2>Search Details</h2>
+Here are the search details set for the plugins that generated the errors found in the next section:
+<br/>
+
+{{#if this}}
+<ul>
+
+    {{#each this}}
+    <li><strong>{{@key}}</strong>
+            {{#if .}}
+                <ul>
+                {{#each .}}
+                    <li>{{@key}}: {{.}}</li>
+                {{/each}}
+                </ul>
+            {{/if}}
+    {{/each}}
+
+</ul>
+{{/if}}

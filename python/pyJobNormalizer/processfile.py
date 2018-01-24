@@ -1,3 +1,23 @@
+#!/bin/python
+#  -*- coding: utf-8 -*-
+#
+###########################################################################
+#
+#  Copyright 2014-18 Bryan Selner
+#
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+###########################################################################
+
 from nltk.corpus import stopwords
 import unicodecsv
 from nltk.stem.snowball import SnowballStemmer
@@ -68,6 +88,16 @@ states = {
 
 
 def writedicttocsv(csvFileName, data, keys=None):
+    """
+
+    Args:
+        csvFileName:
+        data:
+        keys:
+
+    Returns:
+
+    """
     print "Writing " + str(len(data)) + " rows to file " + csvFileName +"..."
     if keys is None:
         item = data.itervalues().next()
@@ -80,11 +110,24 @@ def writedicttocsv(csvFileName, data, keys=None):
         for k in data[row].keys():
             if k not in keys:
                 del data[row][k]
-        csv_writer.writerow(data[row])
+        try:
+            csv_writer.writerow(data[row])
+        except Exception:
+            pass
+
     csvfile.close()
     return csvFileName
 
 def loadCSV(csvFileName, rowKeyName = None):
+    """
+
+    Args:
+        csvFileName:
+        rowKeyName:
+
+    Returns:
+
+    """
 
     print "Loading " + csvFileName
     csv_fp = open(csvFileName, "rbU")
@@ -115,22 +158,35 @@ filepath = os.path.dirname(os.path.abspath(__file__)) # /a/b/c/d/e
 abbrevfile = os.path.join(filepath, "static", "job-title-abbreviations.csv")
 expandWords = loadCSV(abbrevfile, "abbreviation")['dict']
 
-def tokenizeStrings(listStrings, fieldTokenized = "tokenized"):
-    retData = {}
-    keys = listStrings.keys()
-    while len(keys) > 0:
-        k = keys.pop()
-        v = listStrings.pop(k)
+def tokenizeStrings(listData, field, fieldTokenized = "tokenized", retType="string"):
+    """
 
-        retData[k] = { "original" : v, fieldTokenized : []}
+    Args:
+        listData:
+        field:
+        fieldTokenized:
+
+    Returns:
+
+    """
+
+    for k in listData.keys():
         if len(k) == 0:
             print "String value for key was empty.  Skipping..."
-            continue;
+            continue
 
-        tokens = getScrubbedStringTokens(v)
-        retData[k][fieldTokenized] = "|".join(tokens)
+        tokens = getScrubbedStringTokens(listData[k][field])
 
-    return retData
+        if retType == "list":
+            listData[k][fieldTokenized] = tokens
+
+        elif retType == "set":
+                listData[k][fieldTokenized] = set(tokens)
+        else:
+            # if retType == "string" or retType is None:
+            listData[k][fieldTokenized] = "|{}|".format("|".join(tokens))
+
+    return listData
 
 import nltk
 import string
@@ -138,11 +194,27 @@ import string
 # nltk.download()
 
 def removeStopWords(listwords):
+    """
+
+    Args:
+        listwords:
+
+    Returns:
+
+    """
     retwords = [i for i in listwords if i not in stopwrds]
     return retwords
 
 
 def getStemmedWords(listwords):
+    """
+
+    Args:
+        listwords:
+
+    Returns:
+
+    """
     retwords = [snowstemmer.stem(i) for i in listwords]
     return retwords
 
@@ -152,6 +224,15 @@ exclude = set(codecs.encode(string.punctuation, "utf-8"))
 
 import operator
 def combine_dicts(a, b):
+    """
+
+    Args:
+        a:
+        b:
+
+    Returns:
+
+    """
     z = a.copy()
     for k in a.keys():
         for kb in b[k]:
@@ -159,6 +240,16 @@ def combine_dicts(a, b):
     return z
 
 def getExpandedWords(strWords):
+    """
+
+    Args:
+        strWords:
+
+    Returns:
+
+    """
+    if not isinstance(strWords, basestring):
+        strWords = str(strWords)
     assert(len(strWords) > 0)
     s = ''.join(ch for ch in strWords if ch not in exclude)
 
@@ -175,43 +266,34 @@ def getExpandedWords(strWords):
     return retWords
 
 def getScrubbedStringTokens(inputstring):
+    """
+
+    Args:
+        inputstring:
+
+    Returns:
+
+    """
+    if not inputstring:
+        return ""
     strNoAbbrev = getExpandedWords(inputstring)
     lTokensNoStop = removeStopWords(strNoAbbrev)
     lStemmedTokens = getStemmedWords(lTokensNoStop)
 
     return lStemmedTokens
 
-
-
-def tokenizeJSONFile(inputFile, outputFile, dataKey=None, indexKey=None):
-    if indexKey is None:
-        indexKey = 0
-    if dataKey is None:
-        dataKey = 0
-
-    import json
-    inf = open(inputFile, "r")
-    inputData = json.load(inf)
-    if inputData:
-        print "Processing file " + inputFile
-        dictStrings = {}
-        if(isinstance(inputData, dict)):
-            if('jobslist' in inputData and isinstance(inputData['jobslist'], dict) and len(inputData['jobslist']) > 0):
-                for k, v in inputData['jobslist'].items():
-                    dictStrings[k] = v[dataKey]
-                outData = tokenizeStrings(dictStrings, "job_title_tokenized")
-                combined = combine_dicts(inputData['jobslist'], outData)
-                inputData[u'jobslist'] = combined
-                outf = open(outputFile, "w")
-                json.dump(inputData, outf, indent=4, encoding='utf-8')
-                outf.close()
-                print "Tokenized results written to " + outputFile
-                return outputFile
-    else:
-            print "Error:  No job listings found in " + inputFile
-    return None
-
 def tokenizeFile(inputFile, outputFile, dataKey=None, indexKey=None):
+    """
+
+    Args:
+        inputFile:
+        outputFile:
+        dataKey:
+        indexKey:
+
+    Returns:
+
+    """
     if indexKey is None:
         indexKey = 0
     if dataKey is None:
@@ -221,46 +303,15 @@ def tokenizeFile(inputFile, outputFile, dataKey=None, indexKey=None):
     fields = data['fieldnames']
     dictData = data['dict']
     dictStrings = {}
-    if (isinstance(dictData, dict) and len(dictData) > 0):
-        for k, v in dictData.items():
-            dictStrings[k] = v[dataKey]
+    # if (isinstance(dictData, dict) and len(dictData) > 0):
+    #     for k, v in dictData.items():
+    #         dictStrings[k] = v[dataKey]
         # print k, v, "\n"
         # print v[dataKey], "\n", "\n"
 #    listStrings = [k, v[dataKey] for k, v in dictData.items()]
+    tokenkey = str(dataKey) + "tokenized"
+    outData = tokenizeStrings(dictData, dataKey, tokenkey)
+    fields.append(tokenkey)
+    writedicttocsv(outputFile, outData, fields)
 
-    outData = tokenizeStrings(dictStrings, "tokenized")
-    results = combine_dicts(dictData, outData)
-    fields.append("tokenized")
-    writedicttocsv(outputFile, results, fields)
-
-    return results
-
-#
-# def addMatchesToList(source, new_links, itemlist, out_folder, kind):
-#     """
-#
-#     :rtype : object
-#     """
-#     if new_links is None:
-#         new_links = []
-#
-#     for link in new_links:
-#         item = dict(link.attrs.copy())
-#         item['text'] = link.text.encode('ascii', 'ignore').lower()
-#         item['words'] = removeStopWords(item['text'])
-#         l = []
-#         for w in item['words']:
-#             l.append(w.encode('ascii', 'ignore'))
-#         item['words'] = l
-#         item['words_stemmed'] = getStemmedWords(item['words'])
-#         item['source'] = source.lower()
-#
-#         itemlist.append(item)
-#
-#     writelisttocsv(os.path.join(out_folder, (source + "-" + kind +"titles.tsv")), itemlist)
-#
-#     countWords(itemlist, "words", out_folder, source, kind)
-#     countWords(itemlist, "words_stemmed", out_folder, source, kind)
-#
-#     return itemlist
-#
+    return outData

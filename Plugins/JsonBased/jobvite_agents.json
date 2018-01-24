@@ -1,0 +1,80 @@
+{
+    "jobsite_plugins": [
+        {
+            "JobSiteName": "Vulcan",
+            "SourceURL": "https://jobs.jobvite.com/vulcan-inc/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS",
+            "additionalLoadDelaySeconds": 5
+        },
+        {
+            "JobSiteName": "RealNetworks",
+            "SourceURL": "https://jobs.jobvite.com/realnetworks/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "AnotherSource",
+            "SourceURL": "https://jobs.jobvite.com/anothersource/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "HTC",
+            "SourceURL": "https://jobs.jobvite.com/htc/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "Panopto",
+            "SourceURL": "https://jobs.jobvite.com/panopto/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "OpenTable",
+            "SourceURL": "https://jobs.jobvite.com/opentable/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "ExtraHop",
+            "SourceURL": "https://jobs.jobvite.com/extrahop-networks-inc/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "CrossoverHealth",
+            "SourceURL": "https://jobs.jobvite.com/crossover-health/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "Discovia",
+            "SourceURL": "https://jobs.jobvite.com/discovia/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "Doubledown",
+            "SourceURL": "https://jobs.jobvite.com/doubledown/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "NewRelic",
+            "SourceURL": "https://jobs.jobvite.com/newrelic/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "Zillow",
+            "SourceURL": "https://jobs.jobvite.com/zillow/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "JunoTherapeutics",
+            "SourceURL": "https://jobs.jobvite.com/junotherapeutics/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "Pandora",
+            "SourceURL": "https://jobs.jobvite.com/pandora/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        },
+        {
+            "JobSiteName": "InsightRecruitment",
+            "SourceURL": "https://jobs.jobvite.com/insight-recruitment/?nl=1",
+            "PluginExtendsClassName": "AbstractJobviteATS"
+        }
+    ]
+}

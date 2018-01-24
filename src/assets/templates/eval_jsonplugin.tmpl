@@ -1,0 +1,31 @@
+
+class {{PhpClassName}} {{#if PluginExtendsClassName}} extends {{PluginExtendsClassName}} {{/if}}
+{
+    {{#each string_properties}}
+        protected ${{@key}} = "{{{.}}}";
+    {{/each}}
+
+    {{#each numeric_properties}}
+        protected ${{@key}} = {{.}};
+    {{/each}}
+
+    {{#each array_properties}}
+        protected ${{@key}} = {{{.}}};
+    {{/each}}
+
+    {{#each other_properties}}
+        protected ${{@key}} = {{{.}}};
+    {{/each}}
+}
+
+
+try
+{
+    $ob = new {{PhpClassName}}();
+    return (is_a($ob, "{{PhpClassName}}") === true);
+}
+catch (Exception $ex)
+{
+    print("Failed to instantiate ${{PhpCLassName}}");
+    return false;
+}
