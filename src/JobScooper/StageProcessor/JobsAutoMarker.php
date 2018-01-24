@@ -25,9 +25,11 @@ use JobScooper\DataAccess\Map\UserJobMatchTableMap;
 use JobScooper\DataAccess\User;
 use JobScooper\DataAccess\UserJobMatch;
 use JobScooper\DataAccess\UserJobMatchQuery;
+use function JobScooper\Manager\getChannelLogger;
 use JobScooper\Manager\LocationManager;
 use Propel\Runtime\ActiveQuery\Criteria;
 use Propel\Runtime\Propel;
+use JobScooper\Utils\PyJobMatcher;
 
 /**
  * Class JobsAutoMarker
@@ -565,13 +567,8 @@ class JobsAutoMarker
 
 				try {
 					startLogSection("Calling python to do work of job title matching.");
-					$PYTHONPATH = realpath(__ROOT__ . "/python/pyJobNormalizer/matchTitlesToKeywords.py");
-					$cmd = "python " . $PYTHONPATH . " -i " . escapeshellarg($sourcefile) . " -o " . escapeshellarg($resultsfile);
-
-#					$cmd = "source " . realpath(__ROOT__) . "/python/pyJobNormalizer/venv/bin/activate; " . $cmd;
-
-					LogMessage(PHP_EOL . "    ~~~~~~ Running command: " . $cmd . "  ~~~~~~~" . PHP_EOL);
-					doExec($cmd);
+					$logger = getChannelLogger("default");
+					$matcher = new PyJobMatcher($sourcefile, $resultsfile, $logger);
 				} catch (Exception $ex)
 				{
 					throw $ex;

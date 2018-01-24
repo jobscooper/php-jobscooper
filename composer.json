@@ -32,7 +32,8 @@
         "docopt/docopt": "~1.0",
         "phpoffice/phpspreadsheet": "dev-master",
         "sentry/sentry": "^1.9@dev",
-        "adbario/php-dot-notation": "2.x-dev"
+        "adbario/php-dot-notation": "2.x-dev",
+        "jobscooper/jobscooper-plugins" : "*"
     },
     "autoload": {
         "psr-4": {
@@ -42,10 +43,22 @@
             "src/helpers/autoload.php"
         ]
     },
-    "repositories": [
+    "repositories": {
+        "config" :
         {
             "type": "git",
             "url": "https://github.com/selner/Config"
+        },
+
+        "jobscooper-plugins": {
+            "type": "git",
+            "url": "https://github.com/jobscooper/jobscooper-plugins"
+        },
+
+        "jobscooper-pyJobMatcher": {
+            "type": "git",
+            "url": "https://github.com/jobscooper/pyjobmatcher"
         }
-    ]
+    }
+
 }

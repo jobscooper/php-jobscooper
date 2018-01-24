@@ -17,10 +17,9 @@
 
 namespace JobScooper\Builders;
 
-use Exception;
 use JobScooper\DataAccess\JobSiteRecord;
 use JobScooper\DataAccess\JobSiteRecordQuery;
-use JobScooper\DataAccess\User;
+use JobScooperPlugins;
 
 /**
  * Class JobSitePluginBuilder
@@ -28,6 +27,8 @@ use JobScooper\DataAccess\User;
  */
 class JobSitePluginBuilder
 {
+	private $_pluginLoader = null;
+
 	/**
 	 *
 	 */
@@ -203,21 +204,10 @@ class JobSitePluginBuilder
 		if(!empty($sitesBySiteKey))
 			return;
 
-	    $pathPluginDirectory = join(DIRECTORY_SEPARATOR, array(__ROOT__, "Plugins"));
-        if (is_null($pathPluginDirectory) || strlen($pathPluginDirectory) == 0)
-            throw new Exception("Path to plugins source directory was not set.");
-
-        if(!is_dir($pathPluginDirectory))
-	        throw new Exception(sprintf("Unable to access the plugin directory '%s'", $pathPluginDirectory));
-
-        $this->_dirPluginsRoot = realpath($pathPluginDirectory . DIRECTORY_SEPARATOR);
-
-        $this->_dirJsonConfigs = join(DIRECTORY_SEPARATOR, array($pathPluginDirectory, "JsonBased"));
-
         $this->_renderer = loadTemplate(__ROOT__ . '/src/assets/templates/eval_jsonplugin.tmpl');
 
-
-	    $this->_loadPHPPluginFiles_();
+        $this->_pluginLoader = new JobScooperPlugins\PluginsLoader();
+        $this->_pluginLoader->loadPhpBasedPlugins();
 	    $this->_loadJsonPluginConfigFiles_();
         $this->_initializeAllJsonPlugins();
 
@@ -315,7 +305,8 @@ class JobSitePluginBuilder
 	 */
 	private function _loadJsonPluginConfigFiles_()
 	{
-		$this->_configJsonFiles = glob($this->_dirJsonConfigs . DIRECTORY_SEPARATOR . "*.json");
+
+		$this->_configJsonFiles = glob($this->_pluginLoader->dirJsonBased . DIRECTORY_SEPARATOR . "*.json");
 		LogMessage("Loading JSON-based, jobsite plugin configurations from " . count($this->_configJsonFiles) . " files under {$this->_dirJsonConfigs}...");
 		foreach ($this->_configJsonFiles as $f) {
 			$dataPlugins = loadJSON($f, null, true);
@@ -340,17 +331,6 @@ class JobSitePluginBuilder
 	}
 
 
-
-	/**
-	 * @throws \Exception
-	 */
-	private function _loadPhpPluginFiles_()
-	{
-		$files = glob_recursive($this->_dirPluginsRoot . DIRECTORY_SEPARATOR . '*.php');
-		foreach ($files as $file) {
-			require_once($file);
-		}
-	}
 
 	/**
 	 * @param $arrConfigData
