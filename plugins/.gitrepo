@@ -1,0 +1,11 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/jobscooper/jobscooper-plugins
+	branch = master
+	commit = bc37713f29e06f3c779323cbf14b2f1e92bf771e
+	parent = 3e309df6b3815306f53fa48cb4b84ff89efde3ad
+	cmdver = 0.3.1
